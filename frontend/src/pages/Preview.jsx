@@ -1,13 +1,12 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Minus } from "lucide-react";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 import TopBar2 from "../components/TopBar2";
 import api from "../api/axios.js";
-import { useEffect } from "react";
 
-const Preview = ({ formData, cartItems, setCartItems }) => {
+const Preview = ({ formData, setFormData, cartItems, setCartItems }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -15,6 +14,7 @@ const Preview = ({ formData, cartItems, setCartItems }) => {
       navigate("/", { replace: true });
     }
   }, [cartItems, navigate]);
+
   const grandTotal = cartItems.reduce(
     (total, item) => total + item.price * item.quantity,
     0,
@@ -22,26 +22,24 @@ const Preview = ({ formData, cartItems, setCartItems }) => {
   const handleMinus = (itemId) => {
     setCartItems((prev) => {
       const existing = prev.find((i) => i._id === itemId);
-
       if (!existing) return prev;
 
       if (existing.quantity === 1) {
-        // remove item
         return prev.filter((i) => i._id !== itemId);
       }
 
-      // subtract quantity
       return prev.map((i) =>
         i._id === itemId ? { ...i, quantity: i.quantity - 1 } : i,
       );
     });
   };
+
   const handlePrint = async () => {
     try {
       const signatoryRes = await api.get("/signatory");
-
       const signatoryName =
         signatoryRes.data.length > 0 ? signatoryRes.data[0].name : null;
+
       const payload = {
         name: formData.name,
         designation: formData.designation,
@@ -52,28 +50,33 @@ const Preview = ({ formData, cartItems, setCartItems }) => {
         signatory: signatoryName,
         createdAt: new Date(),
       };
-
       const response = await api.post("/purchase-request", payload);
-      const savedId = response.data._id;
 
+      const savedId = response.data._id;
       toast.success("Purchase Request Saved Successfully!");
 
-      //Download file
       const excelResponse = await api.get(
         `/purchase-request/export/${savedId}`,
-        {
-          responseType: "blob",
-        },
+        { responseType: "blob" },
       );
 
-      //downloadable link
       const url = window.URL.createObjectURL(new Blob([excelResponse.data]));
+
       const link = document.createElement("a");
       link.href = url;
       link.setAttribute("download", `purchase_${savedId}.xlsx`);
       document.body.appendChild(link);
       link.click();
       link.remove();
+
+      setCartItems([]);
+      setFormData({
+        name: "",
+        designation: "",
+        department: "",
+        purpose: "",
+      });
+      navigate("/", { replace: true });
     } catch (error) {
       console.error("Error saving or exporting:", error);
       toast.error("Failed to save or export request.");
@@ -88,14 +91,12 @@ const Preview = ({ formData, cartItems, setCartItems }) => {
         <div className="mb-8">
           <h1 className="text-4xl font-semibold">Purchase Request Preview</h1>
         </div>
-
         <div className="flex justify-center">
           <div className="bg-white w-full max-w-4xl rounded-2xl shadow-lg p-8">
             <div className="flex justify-end gap-3 mb-6">
               <Link to="/" className="btn btn-outline btn-md">
                 Back
               </Link>
-
               <button
                 onClick={handlePrint}
                 className="btn btn-primary btn-md px-3 bg-[#9B1805] hover:bg-[#E83838] text-white"
