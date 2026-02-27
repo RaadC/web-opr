@@ -41,6 +41,7 @@ const App = () => {
           element={
             <Preview
               formData={formData}
+              setFormData={setFormData} 
               cartItems={cartItems}
               setCartItems={setCartItems}
             />
