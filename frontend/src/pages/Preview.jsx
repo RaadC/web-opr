@@ -35,53 +35,60 @@ const Preview = ({ formData, setFormData, cartItems, setCartItems }) => {
   };
 
   const handlePrint = async () => {
-    try {
-      const signatoryRes = await api.get("/signatory");
-      const signatoryName =
-        signatoryRes.data.length > 0 ? signatoryRes.data[0].name : null;
+  let savedId = null;
 
-      const payload = {
-        name: formData.name,
-        designation: formData.designation,
-        department: formData.department,
-        purpose: formData.purpose,
-        items: cartItems,
-        totalAmount: grandTotal,
-        signatory: signatoryName,
-        createdAt: new Date(),
-      };
-      const response = await api.post("/purchase-request", payload);
+  try {
+    const signatoryRes = await api.get("/signatory");
 
-      const savedId = response.data._id;
-      toast.success("Purchase Request Saved Successfully!");
+    const signatoryName =
+      signatoryRes.data.length > 0
+        ? signatoryRes.data[0].name
+        : null;
+    const payload = {
+      name: formData.name,
+      designation: formData.designation,
+      department: formData.department,
+      purpose: formData.purpose,
+      items: cartItems,
+      totalAmount: grandTotal,
+      signatory: signatoryName,
+      createdAt: new Date(),
+    };
+    const response = await api.post("/purchase-request", payload);
+    savedId = response.data._id;
 
-      const excelResponse = await api.get(
-        `/purchase-request/export/${savedId}`,
-        { responseType: "blob" },
-      );
+    toast.success("Purchase Request Saved Successfully!");
+    const excelResponse = await api.get(
+      `/purchase-request/export/${savedId}`,
+      { responseType: "blob" }
+    );
 
-      const url = window.URL.createObjectURL(new Blob([excelResponse.data]));
+    const url = window.URL.createObjectURL(
+      new Blob([excelResponse.data])
+    );
 
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", `purchase_${savedId}.xlsx`);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", `purchase_${savedId}.xlsx`);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
 
-      setCartItems([]);
-      setFormData({
-        name: "",
-        designation: "",
-        department: "",
-        purpose: "",
-      });
-      navigate("/", { replace: true });
-    } catch (error) {
-      console.error("Error saving or exporting:", error);
-      toast.error("Failed to save or export request.");
-    }
-  };
+  } catch (error) {
+    console.error("Error saving or exporting:", error);
+    toast.error("Something went wrong, but request may have been saved.");
+  } finally {
+    setCartItems([]);
+
+    setFormData({
+      name: "",
+      designation: "",
+      department: "",
+      purpose: "",
+    });
+    navigate("/", { replace: true });
+  }
+};
 
   return (
     <>
