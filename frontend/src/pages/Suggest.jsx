@@ -49,7 +49,7 @@ const Suggest = () => {
         <div className="relative flex flex-1 flex-col md:flex-row items-center justify-center gap-20">
           <div className="flex flex-col items-center text-center">
             <h1 className="text-4xl font-bold mb-4 text-gray-300">
-              Create Suggetion <br />
+              Create Suggestion <br />
               for Additional Items
             </h1>
             <PackageOpen size={200} className="text-gray-300" />
