@@ -76,7 +76,7 @@ const ViewPurchase = () => {
             <h1 className="text-2xl font-semibold">PR History</h1>
 
             <div className="flex gap-2">
-              <Link to="/admin" className="btn btn-outline btn-md">
+              <Link to="/group-purchase" className="btn btn-outline btn-md">
                 Admin
               </Link>
 
