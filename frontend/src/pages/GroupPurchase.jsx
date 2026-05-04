@@ -13,9 +13,7 @@ const GroupPurchase = () => {
     fetchPurchases();
   }, []);
 
-  /* =========================
-     FETCH PURCHASES
-  ========================= */
+  /* FETCH PURCHASES*/
   const fetchPurchases = async () => {
     try {
       const res = await api.get("/purchase-request");
@@ -25,39 +23,35 @@ const GroupPurchase = () => {
     }
   };
 
-  /* =========================
-     ADD TO GROUP
-  ========================= */
+  /* ADD TO GROUP */
   const handleAdd = (purchase) => {
-    if (selected.find(p => p._id === purchase._id)) {
+    if (selected.find((p) => p._id === purchase._id)) {
       return toast.warning("Already added");
     }
 
-    setSelected(prev => [...prev, purchase]);
+    setSelected((prev) => [...prev, purchase]);
   };
 
-  /* =========================
-     REMOVE FROM GROUP
-  ========================= */
+  /*REMOVE FROM GROUP */
   const handleRemove = (id) => {
-    setSelected(prev => prev.filter(p => p._id !== id));
+    setSelected((prev) => prev.filter((p) => p._id !== id));
   };
 
-  /* =========================
-     EXPORT GROUP
-  ========================= */
+  /*
+  EXPORT GROUP
+  */
   const handleGroupExport = async () => {
     if (selected.length === 0) {
       return toast.warning("No selected purchases");
     }
 
     try {
-      const ids = selected.map(p => p._id);
+      const ids = selected.map((p) => p._id);
 
       const res = await api.post(
         "/purchase-request/group-export",
         { ids },
-        { responseType: "blob" }
+        { responseType: "blob" },
       );
 
       const url = window.URL.createObjectURL(new Blob([res.data]));
@@ -84,10 +78,9 @@ const GroupPurchase = () => {
       <TopBar3 />
 
       <div className="min-h-screen bg-gray-100 p-6 grid grid-cols-2 gap-6">
-
-        {/* =========================
+        {/*
            DIV 1: ALL PURCHASES
-        ========================= */}
+        */}
         <div className="bg-white p-6 rounded-2xl shadow-md">
           <h1 className="text-xl font-semibold mb-4">All Purchases</h1>
 
@@ -103,7 +96,7 @@ const GroupPurchase = () => {
               </thead>
 
               <tbody>
-                {purchases.map(p => (
+                {purchases.map((p) => (
                   <tr key={p._id}>
                     <td>{p.name}</td>
                     <td>{p.department}</td>
@@ -124,9 +117,9 @@ const GroupPurchase = () => {
           </div>
         </div>
 
-        {/* =========================
+        {/*
            DIV 2: SELECTED
-        ========================= */}
+        */}
         <div className="bg-white p-6 rounded-2xl shadow-md">
           <h1 className="text-xl font-semibold mb-4">
             Selected ({selected.length})
@@ -143,7 +136,7 @@ const GroupPurchase = () => {
               </thead>
 
               <tbody>
-                {selected.map(p => (
+                {selected.map((p) => (
                   <tr key={p._id}>
                     <td>{p.name}</td>
                     <td>{p.department}</td>
@@ -164,12 +157,11 @@ const GroupPurchase = () => {
 
           <button
             onClick={handleGroupExport}
-            className="btn btn-success w-full"
+            className="btn btn-primary btn-md bg-[#16a34a] hover:bg-[#22c55e] active:bg-[#15803d] text-white w-full border-none"
           >
             Group & Export Excel
           </button>
         </div>
-
       </div>
     </>
   );

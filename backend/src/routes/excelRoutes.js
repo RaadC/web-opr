@@ -5,9 +5,7 @@ import path from "path";
 
 const router = express.Router();
 
-/* =========================
-   TEMPLATE SELECTOR
-========================= */
+/* TEMPLATE SELECTOR */
 const getTemplatePath = (count) => {
   if (count <= 10) {
     return "templates/pr-template.xlsx";
@@ -20,9 +18,7 @@ const getTemplatePath = (count) => {
   }
 };
 
-/* =========================
-   SINGLE EXPORT (RAW UNIT)
-========================= */
+/* SINGLE EXPORT*/
 router.get("/export/:id", async (req, res) => {
   try {
     const purchase = await Purchase.findById(req.params.id);
@@ -39,7 +35,6 @@ router.get("/export/:id", async (req, res) => {
 
     const worksheet = workbook.getWorksheet("PR page 1");
 
-    // HEADER
     worksheet.getCell("C40").value = purchase.name;
     worksheet.getCell("C41").value = purchase.designation;
     worksheet.getCell("A6").value = purchase.department;
@@ -51,7 +46,6 @@ router.get("/export/:id", async (req, res) => {
     purchase.items.forEach((item, index) => {
       const row = worksheet.getRow(startRow + index);
 
-      // RAW VALUES ONLY (NO FALLBACKS)
       row.getCell(2).value = item.unit;
       row.getCell(3).value = item.name;
       row.getCell(4).value = item.quantity;
@@ -82,9 +76,7 @@ router.get("/export/:id", async (req, res) => {
   }
 });
 
-/* =========================
-   GROUP EXPORT (RAW UNIT)
-========================= */
+/*GROUP EXPORT*/
 router.post("/group-export", async (req, res) => {
   try {
     const { ids } = req.body;
@@ -99,9 +91,7 @@ router.post("/group-export", async (req, res) => {
       return res.status(404).json({ message: "No purchases found" });
     }
 
-    /* =========================
-       MERGE ITEMS (NO UNIT FIXES)
-    ========================= */
+    /*MERGE ITEMS*/
     const map = {};
 
     purchases.forEach((purchase) => {
@@ -132,9 +122,7 @@ router.post("/group-export", async (req, res) => {
       price: item.totalCost / item.quantity,
     }));
 
-    /* =========================
-       TEMPLATE SELECTION
-    ========================= */
+    /* TEMPLATE SELECTION*/
     const itemCount = mergedItems.length;
     const templatePath = path.resolve(getTemplatePath(itemCount));
 

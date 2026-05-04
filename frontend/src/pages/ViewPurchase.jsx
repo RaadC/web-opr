@@ -74,12 +74,21 @@ const ViewPurchase = () => {
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-2xl font-semibold">PR History</h1>
 
-            <button
-              onClick={handleClearAll}
-              className="btn btn-primary btn-md bg-[#9B1805] hover:bg-[#E83838] text-white px-3"
-            >
-              Clear All
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={() => navigate("/group-purchase")}
+                className="btn btn-primary btn-md bg-[#9B1805] hover:bg-[#E83838] text-white px-3"
+              >
+                Group PR
+              </button>
+
+              <button
+                onClick={handleClearAll}
+                className="btn btn-primary btn-md bg-[#9B1805] hover:bg-[#E83838] text-white px-3"
+              >
+                Clear All
+              </button>
+            </div>
           </div>
 
           <div className="overflow-x-auto">
