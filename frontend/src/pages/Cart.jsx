@@ -21,6 +21,9 @@ const Cart = ({ formData, setFormData, cartItems, setCartItems }) => {
   const [loadingItems, setLoadingItems] = useState(false);
   const [itemsError, setItemsError] = useState(null);
 
+  // ✅ NEW: store quantity per item
+  const [quantities, setQuantities] = useState({});
+
   useEffect(() => {
     const fetchDepartments = async () => {
       try {
@@ -62,22 +65,50 @@ const Cart = ({ formData, setFormData, cartItems, setCartItems }) => {
     }));
   };
 
+  // ✅ NEW: handle quantity change
+  const handleQtyChange = (id, value) => {
+    let qty = parseInt(value);
+    if (isNaN(qty) || qty < 1) qty = 1;
+
+    setQuantities((prev) => ({
+      ...prev,
+      [id]: qty,
+    }));
+  };
+
+  // ✅ UPDATED: now uses quantity from state
   const addToCart = (item) => {
-    const existing = cartItems.find((i) => i._id === item._id);
+    const qty = quantities[item._id] || 1;
 
-    if (existing) {
-      setCartItems((prev) =>
-        prev.map((i) =>
-          i._id === item._id ? { ...i, quantity: i.quantity + 1 } : i,
-        ),
-      );
+    setCartItems((prev) => {
+      const existing = prev.find((i) => i._id === item._id);
 
-      toast.info(`${item.name} quantity increased`);
-    } else {
-      setCartItems((prev) => [...prev, { ...item, quantity: 1 }]);
+      if (existing) {
+        return prev.map((i) =>
+          i._id === item._id
+            ? { ...i, quantity: i.quantity + qty }
+            : i
+        );
+      }
 
-      toast.success(`${item.name} added to cart`);
-    }
+      return [
+        ...prev,
+        {
+          _id: item._id,
+          name: item.name,
+          category: item.category,
+          quantity: qty,
+        },
+      ];
+    });
+
+    // reset quantity back to 1
+    setQuantities((prev) => ({
+      ...prev,
+      [item._id]: 1,
+    }));
+
+    toast.success(`${item.name} added (${qty})`);
   };
 
   const handlePreview = () => {
@@ -130,6 +161,7 @@ const Cart = ({ formData, setFormData, cartItems, setCartItems }) => {
         >
           <Printer size={24} />
         </button>
+
         <div className="pl-10 pr-4 pt-6">
           <div className="mb-8">
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-semibold">
@@ -143,31 +175,16 @@ const Cart = ({ formData, setFormData, cartItems, setCartItems }) => {
           {/* FORM */}
           <div className="mb-8">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-3xl">
-              <TextBox
-                name="name"
-                placeholder="Name"
-                value={formData.name}
-                onChange={handleChange}
-              />
-              <TextBox
-                name="designation"
-                placeholder="Designation"
-                value={formData.designation}
-                onChange={handleChange}
-              />
-              <TextBox
-                name="purpose"
-                placeholder="Purpose"
-                value={formData.purpose}
-                onChange={handleChange}
-              />
+              <TextBox name="name" placeholder="Name" value={formData.name} onChange={handleChange} />
+              <TextBox name="designation" placeholder="Designation" value={formData.designation} onChange={handleChange} />
+              <TextBox name="purpose" placeholder="Purpose" value={formData.purpose} onChange={handleChange} />
+
               <select
                 name="department"
                 value={formData.department}
                 onChange={handleChange}
                 className="select w-40 rounded-full pl-3 border border-gray-500 
-                hover:border-[#E83838] focus:border-[#E83838] 
-                focus:outline-none transition"
+                hover:border-[#E83838] focus:border-[#E83838] focus:outline-none transition"
               >
                 <option value="">Department</option>
                 {departments.map((dept) => (
@@ -191,28 +208,28 @@ const Cart = ({ formData, setFormData, cartItems, setCartItems }) => {
           </div>
 
           {loadingItems ? (
-            <div className="text-center text-gray-500 py-10">
-              Loading items...
-            </div>
+            <div className="text-center text-gray-500 py-10">Loading items...</div>
           ) : itemsError ? (
             <div className="text-center text-gray-500 py-10">{itemsError}</div>
-          ) : items.length === 0 ? (
-            <div className="text-center text-gray-500 py-10">
-              No items available.
-            </div>
           ) : filteredItems.length === 0 ? (
-            <div className="text-center text-gray-500 py-10">
-              No items match your search.
-            </div>
+            <div className="text-center text-gray-500 py-10">No items match your search.</div>
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
               {filteredItems.map((item) => (
-                <ItemCard
-                  key={item._id}
-                  item={item}
-                  onAction={addToCart}
-                  Icon={Plus}
-                />
+                <div key={item._id}>
+                  <ItemCard item={item} onAction={addToCart} Icon={Plus} />
+
+                  {/* ✅ Quantity input OUTSIDE ItemCard */}
+                  <input
+                    type="number"
+                    min="1"
+                    value={quantities[item._id] || 1}
+                    onChange={(e) =>
+                      handleQtyChange(item._id, e.target.value)
+                    }
+                    className="input input-bordered w-full mt-2"
+                  />
+                </div>
               ))}
             </div>
           )}
