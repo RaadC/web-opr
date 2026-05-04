@@ -11,6 +11,7 @@ import Manage from "./pages/Manage";
 import ViewPurchase from "./pages/ViewPurchase";
 import ViewSuggest from "./pages/ViewSuggest";
 import Items from "./pages/Items";
+import GroupPurchase from "./pages/GroupPurchase";
 
 const App = () => {
   const [formData, setFormData] = useState({
@@ -41,7 +42,7 @@ const App = () => {
           element={
             <Preview
               formData={formData}
-              setFormData={setFormData} 
+              setFormData={setFormData}
               cartItems={cartItems}
               setCartItems={setCartItems}
             />
@@ -81,6 +82,14 @@ const App = () => {
           element={
             <ProtectedRoute>
               <Items />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/group-purchase"
+          element={
+            <ProtectedRoute>
+              <GroupPurchase />
             </ProtectedRoute>
           }
         />
