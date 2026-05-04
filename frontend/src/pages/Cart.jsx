@@ -77,15 +77,16 @@ const Cart = ({ formData, setFormData, cartItems, setCartItems }) => {
       }
 
       return [
-        ...prev,
-        {
-          _id: item._id,
-          name: item.name,
-          price: item.price, 
-          category: item.category,
-          quantity: qty,
-        },
-      ];
+  ...prev,
+  {
+    _id: item._id,
+    name: item.name,
+    price: item.price,
+    category: item.category,
+    unit: item.unit, 
+    quantity: qty,
+  },
+];
     });
 
     toast.success(`${item.name} added (${qty})`);
