@@ -137,35 +137,37 @@ const Preview = ({ formData, setFormData, cartItems, setCartItems }) => {
               ) : (
                 <div className="space-y-4">
                   {cartItems.map((item) => {
-                    const subtotal = item.price * item.quantity;
+  const price = Number(item.price) || 0;
+  const qty = Number(item.quantity) || 0;
+  const subtotal = price * qty;
 
-                    return (
-                      <div
-                        key={item._id}
-                        className="flex items-center border p-4 rounded-lg"
-                      >
-                        <div className="flex-1">
-                          <p className="font-medium">{item.name}</p>
-                          <p className="text-sm text-gray-600 mt-1">
-                            ₱{item.price} x {item.quantity}
-                          </p>
-                        </div>
+  return (
+    <div
+      key={item._id}
+      className="flex items-center border p-4 rounded-lg"
+    >
+      <div className="flex-1">
+        <p className="font-medium">{item.name}</p>
+        <p className="text-sm text-gray-600 mt-1">
+          ₱{price.toFixed(2)} x {qty}
+        </p>
+      </div>
 
-                        <div className="flex items-center gap-6">
-                          <p className="font-semibold min-w-[90px] text-right">
-                            ₱{subtotal.toFixed(2)}
-                          </p>
+      <div className="flex items-center gap-6">
+        <p className="font-semibold min-w-[90px] text-right">
+          ₱{subtotal.toFixed(2)}
+        </p>
 
-                          <button
-                            onClick={() => handleMinus(item._id)}
-                            className="btn btn-circle btn-sm bg-[#9B1805] hover:bg-[#E83838] text-white border-none"
-                          >
-                            <Minus size={20} />
-                          </button>
-                        </div>
-                      </div>
-                    );
-                  })}
+        <button
+          onClick={() => handleMinus(item._id)}
+          className="btn btn-circle btn-sm bg-[#9B1805] hover:bg-[#E83838] text-white border-none"
+        >
+          <Minus size={20} />
+        </button>
+      </div>
+    </div>
+  );
+})}
                 </div>
               )}
             </div>

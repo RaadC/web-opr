@@ -21,9 +21,6 @@ const Cart = ({ formData, setFormData, cartItems, setCartItems }) => {
   const [loadingItems, setLoadingItems] = useState(false);
   const [itemsError, setItemsError] = useState(null);
 
-  // ✅ NEW: store quantity per item
-  const [quantities, setQuantities] = useState({});
-
   useEffect(() => {
     const fetchDepartments = async () => {
       try {
@@ -65,20 +62,9 @@ const Cart = ({ formData, setFormData, cartItems, setCartItems }) => {
     }));
   };
 
-  // ✅ NEW: handle quantity change
-  const handleQtyChange = (id, value) => {
-    let qty = parseInt(value);
-    if (isNaN(qty) || qty < 1) qty = 1;
-
-    setQuantities((prev) => ({
-      ...prev,
-      [id]: qty,
-    }));
-  };
-
-  // ✅ UPDATED: now uses quantity from state
-  const addToCart = (item) => {
-    const qty = quantities[item._id] || 1;
+  // ✅ UPDATED: now receives quantity from ItemCard
+  const addToCart = (item, quantity) => {
+    const qty = !quantity || quantity < 1 ? 1 : quantity;
 
     setCartItems((prev) => {
       const existing = prev.find((i) => i._id === item._id);
@@ -96,17 +82,12 @@ const Cart = ({ formData, setFormData, cartItems, setCartItems }) => {
         {
           _id: item._id,
           name: item.name,
+          price: item.price, // ✅ IMPORTANT for Preview
           category: item.category,
           quantity: qty,
         },
       ];
     });
-
-    // reset quantity back to 1
-    setQuantities((prev) => ({
-      ...prev,
-      [item._id]: 1,
-    }));
 
     toast.success(`${item.name} added (${qty})`);
   };
@@ -216,20 +197,12 @@ const Cart = ({ formData, setFormData, cartItems, setCartItems }) => {
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
               {filteredItems.map((item) => (
-                <div key={item._id}>
-                  <ItemCard item={item} onAction={addToCart} Icon={Plus} />
-
-                  {/* ✅ Quantity input OUTSIDE ItemCard */}
-                  <input
-                    type="number"
-                    min="1"
-                    value={quantities[item._id] || 1}
-                    onChange={(e) =>
-                      handleQtyChange(item._id, e.target.value)
-                    }
-                    className="input input-bordered w-full mt-2"
-                  />
-                </div>
+                <ItemCard
+                  key={item._id}
+                  item={item}
+                  onAction={addToCart} // ✅ now expects (item, qty)
+                  Icon={Plus}
+                />
               ))}
             </div>
           )}
