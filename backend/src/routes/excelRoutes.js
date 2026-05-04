@@ -59,17 +59,16 @@ router.get("/export/:id", async (req, res) => {
 
     res.setHeader(
       "Content-Type",
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     );
 
     res.setHeader(
       "Content-Disposition",
-      `attachment; filename=purchase_${purchase._id}.xlsx`
+      `attachment; filename=purchase_${purchase._id}.xlsx`,
     );
 
     await workbook.xlsx.write(res);
     res.end();
-
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error generating Excel" });
@@ -94,14 +93,17 @@ router.post("/group-export", async (req, res) => {
     //MERGE ITEMS
     const map = {};
 
-    purchases.forEach(purchase => {
-      purchase.items.forEach(item => {
-        const key = item.name.toLowerCase().replace(/[^a-z0-9]/g, "");
+    purchases.forEach((purchase) => {
+      purchase.items.forEach((item) => {
+        const key =
+          item.name.toLowerCase().replace(/[^a-z0-9]/g, "") +
+          "_" +
+          (item.unit || "pcs").toLowerCase();
 
         if (!map[key]) {
           map[key] = {
             name: item.name,
-            unit: item.unit,
+            unit: item.unit || "pcs",
             quantity: 0,
             totalCost: 0,
           };
@@ -112,7 +114,7 @@ router.post("/group-export", async (req, res) => {
       });
     });
 
-    const mergedItems = Object.values(map).map(item => ({
+    const mergedItems = Object.values(map).map((item) => ({
       name: item.name,
       unit: item.unit,
       quantity: item.quantity,
@@ -146,17 +148,16 @@ router.post("/group-export", async (req, res) => {
 
     res.setHeader(
       "Content-Type",
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     );
 
     res.setHeader(
       "Content-Disposition",
-      `attachment; filename=grouped_purchase.xlsx`
+      `attachment; filename=grouped_purchase.xlsx`,
     );
 
     await workbook.xlsx.write(res);
     res.end();
-
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Grouped export error" });
