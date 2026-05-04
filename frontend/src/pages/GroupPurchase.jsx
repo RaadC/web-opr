@@ -159,7 +159,7 @@ const GroupPurchase = () => {
             onClick={handleGroupExport}
             className="btn btn-primary btn-md bg-[#16a34a] hover:bg-[#22c55e] active:bg-[#15803d] text-white w-full border-none"
           >
-            Group & Export Excel
+            Group & Export
           </button>
         </div>
       </div>

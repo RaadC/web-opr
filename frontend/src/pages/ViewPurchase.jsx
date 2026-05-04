@@ -77,7 +77,7 @@ const ViewPurchase = () => {
             <div className="flex gap-2">
               <button
                 onClick={() => navigate("/group-purchase")}
-                className="btn btn-primary btn-md bg-[#9B1805] hover:bg-[#E83838] text-white px-3"
+                className="btn btn-primary btn-md text-white px-3"
               >
                 Group PR
               </button>
