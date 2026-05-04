@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Trash, Printer } from "lucide-react";
 import { toast } from "react-toastify";
+import { Link } from "react-router-dom";
 
 import TopBar3 from "../components/TopBar3";
 import api from "../api/axios";
@@ -75,12 +76,9 @@ const ViewPurchase = () => {
             <h1 className="text-2xl font-semibold">PR History</h1>
 
             <div className="flex gap-2">
-              <button
-                onClick={() => navigate("/group-purchase")}
-                className="btn btn-primary btn-md text-white px-3"
-              >
-                Group PR
-              </button>
+              <Link to="/admin" className="btn btn-outline btn-md">
+                Admin
+              </Link>
 
               <button
                 onClick={handleClearAll}
