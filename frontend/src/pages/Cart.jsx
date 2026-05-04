@@ -62,7 +62,6 @@ const Cart = ({ formData, setFormData, cartItems, setCartItems }) => {
     }));
   };
 
-  // ✅ UPDATED: now receives quantity from ItemCard
   const addToCart = (item, quantity) => {
     const qty = !quantity || quantity < 1 ? 1 : quantity;
 
@@ -82,7 +81,7 @@ const Cart = ({ formData, setFormData, cartItems, setCartItems }) => {
         {
           _id: item._id,
           name: item.name,
-          price: item.price, // ✅ IMPORTANT for Preview
+          price: item.price, 
           category: item.category,
           quantity: qty,
         },
@@ -200,7 +199,7 @@ const Cart = ({ formData, setFormData, cartItems, setCartItems }) => {
                 <ItemCard
                   key={item._id}
                   item={item}
-                  onAction={addToCart} // ✅ now expects (item, qty)
+                  onAction={addToCart}
                   Icon={Plus}
                 />
               ))}

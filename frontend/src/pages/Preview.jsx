@@ -35,60 +35,55 @@ const Preview = ({ formData, setFormData, cartItems, setCartItems }) => {
   };
 
   const handlePrint = async () => {
-  let savedId = null;
+    let savedId = null;
 
-  try {
-    const signatoryRes = await api.get("/signatory");
+    try {
+      const signatoryRes = await api.get("/signatory");
 
-    const signatoryName =
-      signatoryRes.data.length > 0
-        ? signatoryRes.data[0].name
-        : null;
-    const payload = {
-      name: formData.name,
-      designation: formData.designation,
-      department: formData.department,
-      purpose: formData.purpose,
-      items: cartItems,
-      totalAmount: grandTotal,
-      signatory: signatoryName,
-      createdAt: new Date(),
-    };
-    const response = await api.post("/purchase-request", payload);
-    savedId = response.data._id;
+      const signatoryName =
+        signatoryRes.data.length > 0 ? signatoryRes.data[0].name : null;
+      const payload = {
+        name: formData.name,
+        designation: formData.designation,
+        department: formData.department,
+        purpose: formData.purpose,
+        items: cartItems,
+        totalAmount: grandTotal,
+        signatory: signatoryName,
+        createdAt: new Date(),
+      };
+      const response = await api.post("/purchase-request", payload);
+      savedId = response.data._id;
 
-    toast.success("Purchase Request Saved Successfully!");
-    const excelResponse = await api.get(
-      `/purchase-request/export/${savedId}`,
-      { responseType: "blob" }
-    );
+      toast.success("Purchase Request Saved Successfully!");
+      const excelResponse = await api.get(
+        `/purchase-request/export/${savedId}`,
+        { responseType: "blob" },
+      );
 
-    const url = window.URL.createObjectURL(
-      new Blob([excelResponse.data])
-    );
+      const url = window.URL.createObjectURL(new Blob([excelResponse.data]));
 
-    const link = document.createElement("a");
-    link.href = url;
-    link.setAttribute("download", `purchase_${savedId}.xlsx`);
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `purchase_${savedId}.xlsx`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error("Error saving or exporting:", error);
+      toast.error("Something went wrong, but request may have been saved.");
+    } finally {
+      setCartItems([]);
 
-  } catch (error) {
-    console.error("Error saving or exporting:", error);
-    toast.error("Something went wrong, but request may have been saved.");
-  } finally {
-    setCartItems([]);
-
-    setFormData({
-      name: "",
-      designation: "",
-      department: "",
-      purpose: "",
-    });
-    navigate("/", { replace: true });
-  }
-};
+      setFormData({
+        name: "",
+        designation: "",
+        department: "",
+        purpose: "",
+      });
+      navigate("/", { replace: true });
+    }
+  };
 
   return (
     <>
@@ -137,37 +132,37 @@ const Preview = ({ formData, setFormData, cartItems, setCartItems }) => {
               ) : (
                 <div className="space-y-4">
                   {cartItems.map((item) => {
-  const price = Number(item.price) || 0;
-  const qty = Number(item.quantity) || 0;
-  const subtotal = price * qty;
+                    const price = Number(item.price) || 0;
+                    const qty = Number(item.quantity) || 0;
+                    const subtotal = price * qty;
 
-  return (
-    <div
-      key={item._id}
-      className="flex items-center border p-4 rounded-lg"
-    >
-      <div className="flex-1">
-        <p className="font-medium">{item.name}</p>
-        <p className="text-sm text-gray-600 mt-1">
-          ₱{price.toFixed(2)} x {qty}
-        </p>
-      </div>
+                    return (
+                      <div
+                        key={item._id}
+                        className="flex items-center border p-4 rounded-lg"
+                      >
+                        <div className="flex-1">
+                          <p className="font-medium">{item.name}</p>
+                          <p className="text-sm text-gray-600 mt-1">
+                            ₱{price.toFixed(2)} x {qty}
+                          </p>
+                        </div>
 
-      <div className="flex items-center gap-6">
-        <p className="font-semibold min-w-[90px] text-right">
-          ₱{subtotal.toFixed(2)}
-        </p>
+                        <div className="flex items-center gap-6">
+                          <p className="font-semibold min-w-[90px] text-right">
+                            ₱{subtotal.toFixed(2)}
+                          </p>
 
-        <button
-          onClick={() => handleMinus(item._id)}
-          className="btn btn-circle btn-sm bg-[#9B1805] hover:bg-[#E83838] text-white border-none"
-        >
-          <Minus size={20} />
-        </button>
-      </div>
-    </div>
-  );
-})}
+                          <button
+                            onClick={() => handleMinus(item._id)}
+                            className="btn btn-circle btn-sm bg-[#9B1805] hover:bg-[#E83838] text-white border-none"
+                          >
+                            <Minus size={20} />
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </div>
