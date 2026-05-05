@@ -77,7 +77,7 @@ const ViewPurchase = () => {
 
             <div className="flex gap-2">
               <Link to="/group-purchase" className="btn btn-outline btn-md">
-                Admin
+                Group PR
               </Link>
 
               <button
