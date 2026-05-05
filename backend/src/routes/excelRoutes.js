@@ -7,18 +7,73 @@ const router = express.Router();
 
 /* TEMPLATE SELECTOR */
 const getTemplatePath = (count) => {
-  if (count <= 10) {
+  if (count <= 26) {
     return "templates/pr-template.xlsx";
-  } else if (count <= 20) {
+  } else if (count <= 60) {
     return "templates/pr-template 2p.xlsx";
-  } else if (count <= 30) {
+  } else if (count <= 97) {
     return "templates/pr-template 3p.xlsx";
   } else {
     return "templates/pr-template 4p.xlsx";
   }
 };
 
-/* SINGLE EXPORT*/
+/* HEADER MAP */
+const getHeaderMap = (count) => {
+  if (count <= 26) {
+    return {
+      name: "C40",
+      designation: "C41",
+      department: "A6",
+      purpose: "C36",
+      signatory: "D40",
+    };
+  } else if (count <= 60) {
+    return {
+      name: "C74",
+      designation: "C75",
+      department: "A6",
+      purpose: "C70",
+      signatory: "D74",
+    };
+  } else if (count <= 97) {
+    return {
+      name: "C111",
+      designation: "C112",
+      department: "A6",
+      purpose: "C107",
+      signatory: "D111",
+    };
+  } else {
+    return {
+      name: "C149",
+      designation: "C150",
+      department: "A6",
+      purpose: "C145",
+      signatory: "D149",
+    };
+  }
+};
+
+/* COLUMN MAP (SAFE FOR FUTURE CHANGES) */
+const getColumnMap = (count) => {
+  return {
+    unit: 2,
+    name: 3,
+    qty: 4,
+    price: 5,
+  };
+};
+
+/* HELPER: FILL ROW */
+const fillRow = (row, item, col) => {
+  row.getCell(col.unit).value = item.unit;
+  row.getCell(col.name).value = item.name;
+  row.getCell(col.qty).value = Number(item.quantity) || 0;
+  row.getCell(col.price).value = Number(item.price) || 0;
+};
+
+/* SINGLE EXPORT */
 router.get("/export/:id", async (req, res) => {
   try {
     const purchase = await Purchase.findById(req.params.id);
@@ -35,22 +90,23 @@ router.get("/export/:id", async (req, res) => {
 
     const worksheet = workbook.getWorksheet("PR page 1");
 
-    worksheet.getCell("C40").value = purchase.name;
-    worksheet.getCell("C41").value = purchase.designation;
-    worksheet.getCell("A6").value = purchase.department;
-    worksheet.getCell("C36").value = purchase.purpose;
-    worksheet.getCell("D40").value = purchase.signatory;
+    /* APPLY HEADER MAP */
+    const header = getHeaderMap(itemCount);
+
+    worksheet.getCell(header.name).value = purchase.name;
+    worksheet.getCell(header.designation).value = purchase.designation;
+    worksheet.getCell(header.department).value = purchase.department;
+    worksheet.getCell(header.purpose).value = purchase.purpose;
+    worksheet.getCell(header.signatory).value = purchase.signatory;
+
+    /* APPLY COLUMN MAP */
+    const col = getColumnMap(itemCount);
 
     let startRow = 9;
 
     purchase.items.forEach((item, index) => {
       const row = worksheet.getRow(startRow + index);
-
-      row.getCell(2).value = item.unit;
-      row.getCell(3).value = item.name;
-      row.getCell(4).value = item.quantity;
-      row.getCell(5).value = item.price;
-
+      fillRow(row, item, col);
       row.commit();
     });
 
@@ -76,7 +132,7 @@ router.get("/export/:id", async (req, res) => {
   }
 });
 
-/*GROUP EXPORT*/
+/* GROUP EXPORT */
 router.post("/group-export", async (req, res) => {
   try {
     const { ids } = req.body;
@@ -91,7 +147,7 @@ router.post("/group-export", async (req, res) => {
       return res.status(404).json({ message: "No purchases found" });
     }
 
-    /*MERGE ITEMS*/
+    /* MERGE ITEMS */
     const map = {};
 
     purchases.forEach((purchase) => {
@@ -99,19 +155,22 @@ router.post("/group-export", async (req, res) => {
         const key =
           item.name.toLowerCase().replace(/[^a-z0-9]/g, "") +
           "_" +
-          (item.unit || "").toLowerCase(); 
+          (item.unit || "").toLowerCase();
 
         if (!map[key]) {
           map[key] = {
             name: item.name,
-            unit: item.unit, 
+            unit: item.unit,
             quantity: 0,
             totalCost: 0,
           };
         }
 
-        map[key].quantity += item.quantity;
-        map[key].totalCost += item.price * item.quantity;
+        const qty = Number(item.quantity) || 0;
+        const price = Number(item.price) || 0;
+
+        map[key].quantity += qty;
+        map[key].totalCost += price * qty;
       });
     });
 
@@ -119,10 +178,10 @@ router.post("/group-export", async (req, res) => {
       name: item.name,
       unit: item.unit,
       quantity: item.quantity,
-      price: item.totalCost / item.quantity,
+      price: item.quantity ? item.totalCost / item.quantity : 0,
     }));
 
-    /* TEMPLATE SELECTION*/
+    /* TEMPLATE SELECTION */
     const itemCount = mergedItems.length;
     const templatePath = path.resolve(getTemplatePath(itemCount));
 
@@ -131,16 +190,13 @@ router.post("/group-export", async (req, res) => {
 
     const worksheet = workbook.getWorksheet("PR page 1");
 
+    const col = getColumnMap(itemCount);
+
     let startRow = 9;
 
     mergedItems.forEach((item, index) => {
       const row = worksheet.getRow(startRow + index);
-
-      row.getCell(2).value = item.unit;
-      row.getCell(3).value = item.name;
-      row.getCell(4).value = item.quantity;
-      row.getCell(5).value = item.price;
-
+      fillRow(row, item, col);
       row.commit();
     });
 
