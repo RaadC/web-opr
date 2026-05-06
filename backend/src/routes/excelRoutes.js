@@ -55,7 +55,7 @@ const getHeaderMap = (count) => {
   }
 };
 
-/* COLUMN MAP */
+// COLUMN MAP 
 const getColumnMap = () => {
   return {
     unit: 2,
@@ -65,7 +65,7 @@ const getColumnMap = () => {
   };
 };
 
-/* HELPER: FILL ROW */
+// HELPER: FILL ROW
 const fillRow = (row, item, col) => {
   row.getCell(col.unit).value = item.unit;
   row.getCell(col.name).value = item.name;
@@ -73,9 +73,7 @@ const fillRow = (row, item, col) => {
   row.getCell(col.price).value = Number(item.price) || 0;
 };
 
-/* =========================
-   SINGLE EXPORT
-========================= */
+//SINGLE EXPORT
 router.get("/export/:id", async (req, res) => {
   try {
     const purchase = await Purchase.findById(req.params.id);
@@ -132,9 +130,7 @@ router.get("/export/:id", async (req, res) => {
   }
 });
 
-/* =========================
-   GROUP EXPORT (UPDATED)
-========================= */
+//GROUP EXPORT
 router.post("/group-export", async (req, res) => {
   try {
     const { ids } = req.body;
@@ -149,9 +145,7 @@ router.post("/group-export", async (req, res) => {
       return res.status(404).json({ message: "No purchases found" });
     }
 
-    /* =========================
-       MERGE ITEMS (LEFT TABLE)
-    ========================= */
+    // ITEMS
     const map = {};
 
     purchases.forEach((purchase) => {
@@ -185,9 +179,7 @@ router.post("/group-export", async (req, res) => {
       price: item.quantity ? item.totalCost / item.quantity : 0,
     }));
 
-    /* =========================
-       BUILD PIVOT (RIGHT TABLE)
-    ========================= */
+    //BUILD PIVOT
     const pivot = {};
     const departments = new Set();
 
@@ -206,9 +198,7 @@ router.post("/group-export", async (req, res) => {
     const deptList = Array.from(departments);
     const itemList = Object.keys(pivot);
 
-    /* =========================
-       LOAD TEMPLATE
-    ========================= */
+    //LOAD TEMPLATE
     const itemCount = mergedItems.length;
     const templatePath = path.resolve(getTemplatePath(itemCount));
 
@@ -221,19 +211,15 @@ router.post("/group-export", async (req, res) => {
 
     let startRow = 9;
 
-    /* =========================
-       WRITE LEFT TABLE
-    ========================= */
+    //LEFT TABLE
     mergedItems.forEach((item, index) => {
       const row = worksheet.getRow(startRow + index);
       fillRow(row, item, col);
       row.commit();
     });
 
-    /* =========================
-       WRITE PIVOT (RIGHT SIDE)
-    ========================= */
-    const pivotStartCol = 12; // column G
+    //RIGHT SIDE
+    const pivotStartCol = 12; 
     const pivotStartRow = 3;
 
     const headerRow = worksheet.getRow(pivotStartRow);
@@ -260,11 +246,9 @@ router.post("/group-export", async (req, res) => {
       row.commit();
     });
 
-    /* DATE */
     worksheet.getCell("E6").value =
       `Date: ${new Date().toLocaleDateString("en-US")}`;
 
-    /* RESPONSE */
     res.setHeader(
       "Content-Type",
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
