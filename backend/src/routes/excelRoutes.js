@@ -55,8 +55,8 @@ const getHeaderMap = (count) => {
   }
 };
 
-/* COLUMN MAP (SAFE FOR FUTURE CHANGES) */
-const getColumnMap = (count) => {
+/* COLUMN MAP */
+const getColumnMap = () => {
   return {
     unit: 2,
     name: 3,
@@ -73,7 +73,9 @@ const fillRow = (row, item, col) => {
   row.getCell(col.price).value = Number(item.price) || 0;
 };
 
-/* SINGLE EXPORT */
+/* =========================
+   SINGLE EXPORT
+========================= */
 router.get("/export/:id", async (req, res) => {
   try {
     const purchase = await Purchase.findById(req.params.id);
@@ -90,7 +92,6 @@ router.get("/export/:id", async (req, res) => {
 
     const worksheet = workbook.getWorksheet("PR page 1");
 
-    /* APPLY HEADER MAP */
     const header = getHeaderMap(itemCount);
 
     worksheet.getCell(header.name).value = purchase.name;
@@ -99,8 +100,7 @@ router.get("/export/:id", async (req, res) => {
     worksheet.getCell(header.purpose).value = purchase.purpose;
     worksheet.getCell(header.signatory).value = purchase.signatory;
 
-    /* APPLY COLUMN MAP */
-    const col = getColumnMap(itemCount);
+    const col = getColumnMap();
 
     let startRow = 9;
 
@@ -132,7 +132,9 @@ router.get("/export/:id", async (req, res) => {
   }
 });
 
-/* GROUP EXPORT */
+/* =========================
+   GROUP EXPORT (UPDATED)
+========================= */
 router.post("/group-export", async (req, res) => {
   try {
     const { ids } = req.body;
@@ -147,7 +149,9 @@ router.post("/group-export", async (req, res) => {
       return res.status(404).json({ message: "No purchases found" });
     }
 
-    /* MERGE ITEMS */
+    /* =========================
+       MERGE ITEMS (LEFT TABLE)
+    ========================= */
     const map = {};
 
     purchases.forEach((purchase) => {
@@ -181,7 +185,30 @@ router.post("/group-export", async (req, res) => {
       price: item.quantity ? item.totalCost / item.quantity : 0,
     }));
 
-    /* TEMPLATE SELECTION */
+    /* =========================
+       BUILD PIVOT (RIGHT TABLE)
+    ========================= */
+    const pivot = {};
+    const departments = new Set();
+
+    purchases.forEach((p) => {
+      const dept = p.department || "N/A";
+      departments.add(dept);
+
+      (p.items || []).forEach((item) => {
+        if (!pivot[item.name]) pivot[item.name] = {};
+        if (!pivot[item.name][dept]) pivot[item.name][dept] = 0;
+
+        pivot[item.name][dept] += Number(item.quantity) || 0;
+      });
+    });
+
+    const deptList = Array.from(departments);
+    const itemList = Object.keys(pivot);
+
+    /* =========================
+       LOAD TEMPLATE
+    ========================= */
     const itemCount = mergedItems.length;
     const templatePath = path.resolve(getTemplatePath(itemCount));
 
@@ -190,19 +217,54 @@ router.post("/group-export", async (req, res) => {
 
     const worksheet = workbook.getWorksheet("PR page 1");
 
-    const col = getColumnMap(itemCount);
+    const col = getColumnMap();
 
     let startRow = 9;
 
+    /* =========================
+       WRITE LEFT TABLE
+    ========================= */
     mergedItems.forEach((item, index) => {
       const row = worksheet.getRow(startRow + index);
       fillRow(row, item, col);
       row.commit();
     });
 
+    /* =========================
+       WRITE PIVOT (RIGHT SIDE)
+    ========================= */
+    const pivotStartCol = 12; // column G
+    const pivotStartRow = 3;
+
+    const headerRow = worksheet.getRow(pivotStartRow);
+
+    headerRow.getCell(pivotStartCol).value = "Item";
+
+    deptList.forEach((dept, i) => {
+      headerRow.getCell(pivotStartCol + 1 + i).value = dept;
+    });
+
+    headerRow.font = { bold: true };
+    headerRow.commit();
+
+    itemList.forEach((itemName, rowIndex) => {
+      const row = worksheet.getRow(pivotStartRow + 1 + rowIndex);
+
+      row.getCell(pivotStartCol).value = itemName;
+
+      deptList.forEach((dept, colIndex) => {
+        row.getCell(pivotStartCol + 1 + colIndex).value =
+          pivot[itemName][dept] || 0;
+      });
+
+      row.commit();
+    });
+
+    /* DATE */
     worksheet.getCell("E6").value =
       `Date: ${new Date().toLocaleDateString("en-US")}`;
 
+    /* RESPONSE */
     res.setHeader(
       "Content-Type",
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
