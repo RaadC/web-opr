@@ -1,33 +1,29 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Minus } from "lucide-react";
 import { toast } from "react-toastify";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 
 import TopBar2 from "../components/TopBar2";
 import api from "../api/axios.js";
-import { getCart, saveCart, clearCart } from "../utils/cartStorage";
 
-const Preview = ({ formData, setFormData, setCartItems }) => {
+// 👇 CONTEXT
+import { useApp } from "../context/AppContext";
+
+const Preview = () => {
   const navigate = useNavigate();
 
-  const [cartItems, setLocalCart] = useState([]);
-
-  /* LOAD CART FROM LOCALSTORAGE */
-  useEffect(() => {
-    const stored = getCart();
-    setLocalCart(stored);
-    setCartItems(stored);
-  }, []);
-
-  /* SYNC ON CHANGE */
-  useEffect(() => {
-    saveCart(cartItems);
-    setCartItems(cartItems);
-  }, [cartItems]);
+  const {
+    cartItems,
+    setCartItems,
+    formData,
+    setFormData,
+    decreaseItem,
+    clearAll,
+  } = useApp();
 
   /* REDIRECT IF EMPTY */
   useEffect(() => {
-    if (cartItems.length === 0) {
+    if (!cartItems || cartItems.length === 0) {
       navigate("/", { replace: true });
     }
   }, [cartItems, navigate]);
@@ -36,22 +32,6 @@ const Preview = ({ formData, setFormData, setCartItems }) => {
     (total, item) => total + item.price * item.quantity,
     0
   );
-
-  /* REMOVE / DECREASE ITEM */
-  const handleMinus = (itemId) => {
-    setLocalCart((prev) => {
-      const updated = prev
-        .map((i) =>
-          i._id === itemId
-            ? { ...i, quantity: i.quantity - 1 }
-            : i
-        )
-        .filter((i) => i.quantity > 0);
-
-      saveCart(updated);
-      return updated;
-    });
-  };
 
   /* PRINT + SAVE + EXPORT */
   const handlePrint = async () => {
@@ -89,23 +69,15 @@ const Preview = ({ formData, setFormData, setCartItems }) => {
       document.body.appendChild(link);
       link.click();
       link.remove();
+
+      /* CLEAR EVERYTHING FROM CONTEXT */
+      clearAll();
+
+      navigate("/", { replace: true });
+
     } catch (error) {
       console.error("Error saving or exporting:", error);
       toast.error("Something went wrong, but request may have been saved.");
-    } finally {
-      setLocalCart([]);
-      saveCart([]);
-
-      setCartItems([]);
-
-      setFormData({
-        name: "",
-        designation: "",
-        department: "",
-        purpose: "",
-      });
-
-      navigate("/", { replace: true });
     }
   };
 
@@ -115,13 +87,15 @@ const Preview = ({ formData, setFormData, setCartItems }) => {
 
       <div className="min-h-screen bg-gray-100 px-6 py-8">
         <div className="mb-8">
-          <h1 className="text-4xl font-semibold">Purchase Request Preview</h1>
+          <h1 className="text-4xl font-semibold">
+            Purchase Request Preview
+          </h1>
         </div>
 
         <div className="flex justify-center">
           <div className="bg-white w-full max-w-4xl rounded-2xl shadow-lg p-8">
 
-            {/* ACTION BUTTONS */}
+            {/* BUTTONS */}
             <div className="flex justify-end gap-3 mb-6">
               <Link to="/" className="btn btn-outline btn-md">
                 Back
@@ -176,7 +150,7 @@ const Preview = ({ formData, setFormData, setCartItems }) => {
                           </p>
 
                           <button
-                            onClick={() => handleMinus(item._id)}
+                            onClick={() => decreaseItem(item._id)}
                             className="btn btn-circle btn-sm bg-[#9B1805] hover:bg-[#E83838] text-white border-none"
                           >
                             <Minus size={20} />

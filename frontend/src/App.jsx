@@ -29,23 +29,13 @@ const App = () => {
         <Route
           path="/"
           element={
-            <Cart
-              formData={formData}
-              setFormData={setFormData}
-              cartItems={cartItems}
-              setCartItems={setCartItems}
-            />
+            <Cart/>
           }
         />
         <Route
           path="/preview"
           element={
-            <Preview
-              formData={formData}
-              setFormData={setFormData}
-              cartItems={cartItems}
-              setCartItems={setCartItems}
-            />
+            <Preview/>
           }
         />
         <Route path="/suggest" element={<Suggest />} />

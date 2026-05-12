@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { getCart, saveCart } from "../utils/cartStorage";
 import { Plus, Printer } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -11,9 +10,20 @@ import ItemCard from "../components/ItemCard";
 import api from "../api/axios.js";
 import Footer from "../components/Footer.jsx";
 
-const Cart = ({ formData, setFormData, cartItems, setCartItems }) => {
+import { useApp } from "../context/AppContext";
+
+const Cart = () => {
   const navigate = useNavigate();
 
+  /* ================= CONTEXT ================= */
+  const {
+    cartItems,
+    addToCart,
+    formData,
+    setFormData,
+  } = useApp();
+
+  /* ================= LOCAL UI STATE ================= */
   const [departments, setDepartments] = useState([]);
   const [items, setItems] = useState([]);
 
@@ -22,23 +32,7 @@ const Cart = ({ formData, setFormData, cartItems, setCartItems }) => {
   const [loadingItems, setLoadingItems] = useState(false);
   const [itemsError, setItemsError] = useState(null);
 
-  //prevent overwrite bug
-  const [initialized, setInitialized] = useState(false);
-
-  /* LOAD CART ONCE */
-  useEffect(() => {
-    const storedCart = getCart();
-    setCartItems(storedCart);
-    setInitialized(true);
-  }, []);
-
-  /* SAVE CART ONLY AFTER INIT */
-  useEffect(() => {
-    if (!initialized) return;
-    saveCart(cartItems);
-  }, [cartItems, initialized]);
-
-  /* FETCH DEPARTMENTS */
+  /* ================= FETCH DEPARTMENTS ================= */
   useEffect(() => {
     const fetchDepartments = async () => {
       try {
@@ -52,7 +46,7 @@ const Cart = ({ formData, setFormData, cartItems, setCartItems }) => {
     fetchDepartments();
   }, []);
 
-  /* FETCH ITEMS */
+  /* ================= FETCH ITEMS ================= */
   useEffect(() => {
     const fetchItems = async () => {
       try {
@@ -73,46 +67,17 @@ const Cart = ({ formData, setFormData, cartItems, setCartItems }) => {
     fetchItems();
   }, []);
 
+  /* ================= FORM HANDLER ================= */
   const handleChange = (e) => {
     const { name, value } = e.target;
+
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
   };
 
-  /* ADD TO CART */
-  const addToCart = (item, quantity) => {
-    const qty = !quantity || quantity < 1 ? 1 : quantity;
-
-    setCartItems((prev) => {
-      const existing = prev.find((i) => i._id === item._id);
-
-      if (existing) {
-        return prev.map((i) =>
-          i._id === item._id
-            ? { ...i, quantity: i.quantity + qty }
-            : i
-        );
-      }
-
-      return [
-        ...prev,
-        {
-          _id: item._id,
-          name: item.name,
-          price: item.price,
-          category: item.category,
-          unit: item.unit,
-          quantity: qty,
-        },
-      ];
-    });
-
-    toast.success(`${item.name} added (${qty})`);
-  };
-
-  /* PREVIEW VALIDATION */
+  /* ================= PREVIEW VALIDATION ================= */
   const handlePreview = () => {
     if (!formData.name.trim()) return toast.error("Name is required");
     if (!formData.designation.trim()) return toast.error("Designation is required");
@@ -120,10 +85,10 @@ const Cart = ({ formData, setFormData, cartItems, setCartItems }) => {
     if (!formData.department) return toast.error("Please select a department");
     if (cartItems.length === 0) return toast.error("Please add at least one item");
 
-    toast.success("Proceeding to preview");
     navigate("/preview");
   };
 
+  /* ================= FILTER ITEMS ================= */
   const categories = ["All", ...new Set(items.map((item) => item.category))];
 
   const filteredItems = items.filter((item) => {
@@ -143,6 +108,8 @@ const Cart = ({ formData, setFormData, cartItems, setCartItems }) => {
       <TopBar />
 
       <div className="min-h-screen">
+
+        {/* FLOAT BUTTON */}
         <button
           onClick={handlePreview}
           className="fixed top-24 right-6 btn btn-circle btn-lg z-50 shadow-lg 
@@ -152,6 +119,8 @@ const Cart = ({ formData, setFormData, cartItems, setCartItems }) => {
         </button>
 
         <div className="pl-10 pr-4 pt-6">
+
+          {/* TITLE */}
           <div className="mb-8">
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-semibold">
               TUPC Procurement Cart
@@ -164,18 +133,21 @@ const Cart = ({ formData, setFormData, cartItems, setCartItems }) => {
           {/* FORM */}
           <div className="mb-8">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-3xl">
+
               <TextBox
                 name="name"
                 placeholder="Name"
                 value={formData.name}
                 onChange={handleChange}
               />
+
               <TextBox
                 name="designation"
                 placeholder="Designation"
                 value={formData.designation}
                 onChange={handleChange}
               />
+
               <TextBox
                 name="purpose"
                 placeholder="Purpose"
@@ -191,14 +163,13 @@ const Cart = ({ formData, setFormData, cartItems, setCartItems }) => {
                 hover:border-[#E83838] focus:border-[#E83838] focus:outline-none transition"
               >
                 <option value="">Department</option>
-                {[...departments]
-                  .sort((a, b) => a.code.localeCompare(b.code))
-                  .map((dept) => (
-                    <option key={dept._id} value={dept.code}>
-                      {dept.code}
-                    </option>
-                  ))}
+                {departments.map((dept) => (
+                  <option key={dept._id} value={dept.code}>
+                    {dept.code}
+                  </option>
+                ))}
               </select>
+
             </div>
           </div>
 
@@ -210,7 +181,6 @@ const Cart = ({ formData, setFormData, cartItems, setCartItems }) => {
               type={selectedCategory}
               setType={setSelectedCategory}
               categories={categories}
-              onSubmit={() => {}}
             />
           </div>
 
@@ -239,6 +209,7 @@ const Cart = ({ formData, setFormData, cartItems, setCartItems }) => {
               ))}
             </div>
           )}
+
         </div>
       </div>
 
