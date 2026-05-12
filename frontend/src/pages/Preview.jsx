@@ -6,7 +6,6 @@ import { useEffect } from "react";
 import TopBar2 from "../components/TopBar2";
 import api from "../api/axios.js";
 
-// 👇 CONTEXT
 import { useApp } from "../context/AppContext";
 
 const Preview = () => {
@@ -21,7 +20,6 @@ const Preview = () => {
     clearAll,
   } = useApp();
 
-  /* REDIRECT IF EMPTY */
   useEffect(() => {
     if (!cartItems || cartItems.length === 0) {
       navigate("/", { replace: true });
@@ -30,10 +28,9 @@ const Preview = () => {
 
   const grandTotal = cartItems.reduce(
     (total, item) => total + item.price * item.quantity,
-    0
+    0,
   );
 
-  /* PRINT + SAVE + EXPORT */
   const handlePrint = async () => {
     try {
       const signatoryRes = await api.get("/signatory");
@@ -59,7 +56,7 @@ const Preview = () => {
 
       const excelResponse = await api.get(
         `/purchase-request/export/${savedId}`,
-        { responseType: "blob" }
+        { responseType: "blob" },
       );
 
       const url = window.URL.createObjectURL(new Blob([excelResponse.data]));
@@ -70,11 +67,9 @@ const Preview = () => {
       link.click();
       link.remove();
 
-      /* CLEAR EVERYTHING FROM CONTEXT */
       clearAll();
 
       navigate("/", { replace: true });
-
     } catch (error) {
       console.error("Error saving or exporting:", error);
       toast.error("Something went wrong, but request may have been saved.");
@@ -87,15 +82,11 @@ const Preview = () => {
 
       <div className="min-h-screen bg-gray-100 px-6 py-8">
         <div className="mb-8">
-          <h1 className="text-4xl font-semibold">
-            Purchase Request Preview
-          </h1>
+          <h1 className="text-4xl font-semibold">Purchase Request Preview</h1>
         </div>
 
         <div className="flex justify-center">
           <div className="bg-white w-full max-w-4xl rounded-2xl shadow-lg p-8">
-
-            {/* BUTTONS */}
             <div className="flex justify-end gap-3 mb-6">
               <Link to="/" className="btn btn-outline btn-md">
                 Back
@@ -112,10 +103,18 @@ const Preview = () => {
             {/* FORM DATA */}
             <div className="mb-8 border-b pb-6">
               <div className="space-y-3 text-gray-700">
-                <p><strong>Name:</strong> {formData.name}</p>
-                <p><strong>Designation:</strong> {formData.designation}</p>
-                <p><strong>Department:</strong> {formData.department}</p>
-                <p><strong>Purpose:</strong> {formData.purpose}</p>
+                <p>
+                  <strong>Name:</strong> {formData.name}
+                </p>
+                <p>
+                  <strong>Designation:</strong> {formData.designation}
+                </p>
+                <p>
+                  <strong>Department:</strong> {formData.department}
+                </p>
+                <p>
+                  <strong>Purpose:</strong> {formData.purpose}
+                </p>
               </div>
             </div>
 
@@ -163,12 +162,10 @@ const Preview = () => {
               )}
             </div>
 
-            {/* TOTAL */}
             <div className="border-t pt-6 flex justify-between text-lg font-bold">
               <span>Total</span>
               <span>₱{grandTotal.toFixed(2)}</span>
             </div>
-
           </div>
         </div>
       </div>

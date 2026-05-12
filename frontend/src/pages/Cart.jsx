@@ -15,10 +15,9 @@ import { useApp } from "../context/AppContext";
 const Cart = () => {
   const navigate = useNavigate();
 
-  /* ================= CONTEXT ================= */
   const { cartItems, addToCart, formData, setFormData, clearAll } = useApp();
 
-  /* ================= LOCAL UI STATE ================= */
+  //LOCAL UI STATE
   const [departments, setDepartments] = useState([]);
   const [items, setItems] = useState([]);
 
@@ -27,7 +26,6 @@ const Cart = () => {
   const [loadingItems, setLoadingItems] = useState(false);
   const [itemsError, setItemsError] = useState(null);
 
-  /* ================= FETCH DEPARTMENTS ================= */
   useEffect(() => {
     const fetchDepartments = async () => {
       try {
@@ -41,7 +39,6 @@ const Cart = () => {
     fetchDepartments();
   }, []);
 
-  /* ================= FETCH ITEMS ================= */
   useEffect(() => {
     const fetchItems = async () => {
       try {
@@ -62,7 +59,6 @@ const Cart = () => {
     fetchItems();
   }, []);
 
-  /* ================= FORM HANDLER ================= */
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -72,7 +68,6 @@ const Cart = () => {
     }));
   };
 
-  /* ================= PREVIEW VALIDATION ================= */
   const handlePreview = () => {
     if (!formData.name.trim()) return toast.error("Name is required");
     if (!formData.designation.trim())
@@ -85,7 +80,6 @@ const Cart = () => {
     navigate("/preview");
   };
 
-  /* ================= FILTER ITEMS ================= */
   const categories = ["All", ...new Set(items.map((item) => item.category))];
 
   const filteredItems = items.filter((item) => {
@@ -114,7 +108,6 @@ const Cart = () => {
         </button>
 
         <div className="pl-10 pr-4 pt-6">
-          {/* TITLE */}
           <div className="mb-8">
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-semibold">
               TUPC Procurement Cart
@@ -154,7 +147,7 @@ const Cart = () => {
                   value={formData.department}
                   onChange={handleChange}
                   className="select w-40 rounded-full pl-3 border border-gray-500 
-    hover:border-[#E83838] focus:border-[#E83838] focus:outline-none transition"
+                            hover:border-[#E83838] focus:border-[#E83838] focus:outline-none transition"
                 >
                   <option value="">Department</option>
 
@@ -168,7 +161,7 @@ const Cart = () => {
                 <button
                   onClick={clearAll}
                   type="button"
-                  className="btn btn-sm bg-[#9B1805] hover:bg-[#E83838] text-white border-none"
+                  className="btn btn-md bg-[#9B1805] hover:bg-[#E83838] text-white border-none"
                 >
                   Clear
                 </button>
@@ -176,7 +169,6 @@ const Cart = () => {
             </div>
           </div>
 
-          {/* SEARCH */}
           <div className="mb-10">
             <SearchBar
               value={search}
@@ -187,7 +179,6 @@ const Cart = () => {
             />
           </div>
 
-          {/* ITEMS */}
           {loadingItems ? (
             <div className="text-center text-gray-500 py-10">
               Loading items...

@@ -11,10 +11,8 @@ import {
 const AppContext = createContext();
 
 export const AppProvider = ({ children }) => {
-  /* ================= CART ================= */
   const [cartItems, setCartItems] = useState([]);
 
-  /* ================= FORM ================= */
   const [formData, setFormData] = useState({
     name: "",
     designation: "",
@@ -22,7 +20,6 @@ export const AppProvider = ({ children }) => {
     purpose: "",
   });
 
-  /* ================= LOAD ON START ================= */
   useEffect(() => {
     setCartItems(getCart());
 
@@ -33,26 +30,21 @@ export const AppProvider = ({ children }) => {
     }
   }, []);
 
-  /* ================= SAVE CART ================= */
   useEffect(() => {
     saveCart(cartItems);
   }, [cartItems]);
 
-  /* ================= SAVE FORM ================= */
   useEffect(() => {
     saveFormData(formData);
   }, [formData]);
 
-  /* ================= ADD ITEM ================= */
   const addToCart = (item, qty = 1) => {
     setCartItems((prev) => {
       const existing = prev.find((i) => i._id === item._id);
 
       if (existing) {
         return prev.map((i) =>
-          i._id === item._id
-            ? { ...i, quantity: i.quantity + qty }
-            : i
+          i._id === item._id ? { ...i, quantity: i.quantity + qty } : i,
         );
       }
 
@@ -62,20 +54,14 @@ export const AppProvider = ({ children }) => {
     toast.success(`${item.name} added (${qty})`);
   };
 
-  /* ================= DECREASE ITEM ================= */
   const decreaseItem = (id) => {
     setCartItems((prev) =>
       prev
-        .map((i) =>
-          i._id === id
-            ? { ...i, quantity: i.quantity - 1 }
-            : i
-        )
-        .filter((i) => i.quantity > 0)
+        .map((i) => (i._id === id ? { ...i, quantity: i.quantity - 1 } : i))
+        .filter((i) => i.quantity > 0),
     );
   };
 
-  /* ================= CLEAR EVERYTHING ================= */
   const clearAll = () => {
     const emptyForm = {
       name: "",

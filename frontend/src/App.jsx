@@ -26,18 +26,8 @@ const App = () => {
   return (
     <div className="relative min-h-screen w-full">
       <Routes>
-        <Route
-          path="/"
-          element={
-            <Cart/>
-          }
-        />
-        <Route
-          path="/preview"
-          element={
-            <Preview/>
-          }
-        />
+        <Route path="/" element={<Cart />} />
+        <Route path="/preview" element={<Preview />} />
         <Route path="/suggest" element={<Suggest />} />
         <Route path="/admin" element={<AdminLogin />} />
         <Route

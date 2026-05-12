@@ -1,8 +1,6 @@
 const CART_KEY = "cart_items";
 const FORM_KEY = "form_data";
 
-/* ================= CART ================= */
-
 export const getCart = () => {
   try {
     return JSON.parse(localStorage.getItem(CART_KEY)) || [];
@@ -14,8 +12,6 @@ export const getCart = () => {
 export const saveCart = (items) => {
   localStorage.setItem(CART_KEY, JSON.stringify(items));
 };
-
-/* ================= FORM ================= */
 
 export const getFormData = () => {
   try {
