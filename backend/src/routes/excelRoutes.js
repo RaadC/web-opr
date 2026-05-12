@@ -7,11 +7,11 @@ const router = express.Router();
 
 /* TEMPLATE SELECTOR */
 const getTemplatePath = (count) => {
-  if (count <= 26) {
+  if (count <= 25) {
     return "templates/pr-template.xlsx";
   } else if (count <= 60) {
     return "templates/pr-template 2p.xlsx";
-  } else if (count <= 97) {
+  } else if (count <= 107) {
     return "templates/pr-template 3p.xlsx";
   } else {
     return "templates/pr-template 4p.xlsx";
@@ -20,13 +20,13 @@ const getTemplatePath = (count) => {
 
 /* HEADER MAP */
 const getHeaderMap = (count) => {
-  if (count <= 26) {
+  if (count <= 25) {
     return {
-      name: "C40",
-      designation: "C41",
+      name: "C39",
+      designation: "C40",
       department: "A6",
-      purpose: "C36",
-      signatory: "D40",
+      purpose: "C35",
+      signatory: "D39",
     };
   } else if (count <= 60) {
     return {
@@ -36,21 +36,21 @@ const getHeaderMap = (count) => {
       purpose: "C70",
       signatory: "D74",
     };
-  } else if (count <= 97) {
+  } else if (count <= 107) {
     return {
-      name: "C111",
-      designation: "C112",
+      name: "C121",
+      designation: "C122",
       department: "A6",
-      purpose: "C107",
-      signatory: "D111",
+      purpose: "C117",
+      signatory: "D121",
     };
   } else {
     return {
-      name: "C149",
-      designation: "C150",
+      name: "C168",
+      designation: "C169",
       department: "A6",
-      purpose: "C145",
-      signatory: "D149",
+      purpose: "C164",
+      signatory: "D168",
     };
   }
 };
