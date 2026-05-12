@@ -79,7 +79,7 @@ const GroupPurchase = () => {
         {
           //ALL PURCHASES
         }
-        <div className="bg-white p-6 rounded-2xl shadow-md">
+        <div className="order-2 lg:order-1 bg-white p-6 rounded-2xl shadow-md">
           <h1 className="text-xl font-semibold mb-4">All Purchases</h1>
 
           <div className="overflow-x-auto">
@@ -116,9 +116,9 @@ const GroupPurchase = () => {
         </div>
 
         {
-          //DIV 2: SELECTED
+          //SELECTED
         }
-        <div className="bg-white p-6 rounded-2xl shadow-md">
+        <div className="order-1 lg:order-2 bg-white p-6 rounded-2xl shadow-md">
           <h1 className="text-xl font-semibold mb-4">
             Selected ({selected.length})
           </h1>
