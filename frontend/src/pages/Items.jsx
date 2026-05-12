@@ -164,15 +164,24 @@ const Items = () => {
           <div className="bg-white p-6 rounded-2xl w-full max-w-md">
             <h2 className="text-xl font-semibold mb-4">Add Item</h2>
             <div className="space-y-3">
-              <input
-                type="text"
-                placeholder="Name"
-                value={newItem.name}
-                onChange={(e) =>
-                  setNewItem({ ...newItem, name: e.target.value })
-                }
-                className="input w-full input-bordered  pl-1 border border-gray-500"
-              />
+              <div>
+                <input
+                  type="text"
+                  placeholder="Name"
+                  value={newItem.name}
+                  onChange={(e) =>
+                    setNewItem({ ...newItem, name: e.target.value })
+                  }
+                  maxLength={100}
+                  className="input w-full input-bordered pl-1 border border-gray-500"
+                />
+
+                {newItem.name.length === 100 && (
+                  <p className="text-red-500 text-sm mt-1">
+                    Maximum 100 characters reached
+                  </p>
+                )}
+              </div>
               <input
                 type="number"
                 placeholder="Price"
