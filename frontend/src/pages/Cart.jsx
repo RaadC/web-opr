@@ -161,7 +161,7 @@ const Cart = () => {
                 <button
                   onClick={clearAll}
                   type="button"
-                  className="btn btn-md bg-[#9B1805] hover:bg-[#E83838] text-white border-none"
+                  className="btn btn-md bg-[#9B1805] hover:bg-[#E83838] text-white border-none px-3"
                 >
                   Clear
                 </button>
