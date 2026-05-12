@@ -13,7 +13,7 @@ const GroupPurchase = () => {
     fetchPurchases();
   }, []);
 
-  /* FETCH PURCHASES*/
+  //FETCH PURCHASES
   const fetchPurchases = async () => {
     try {
       const res = await api.get("/purchase-request");
@@ -23,7 +23,7 @@ const GroupPurchase = () => {
     }
   };
 
-  /* ADD TO GROUP */
+  // ADD TO GROUP 
   const handleAdd = (purchase) => {
     if (selected.find((p) => p._id === purchase._id)) {
       return toast.warning("Already added");
@@ -32,14 +32,12 @@ const GroupPurchase = () => {
     setSelected((prev) => [...prev, purchase]);
   };
 
-  /*REMOVE FROM GROUP */
+  //REMOVE FROM GROUP
   const handleRemove = (id) => {
     setSelected((prev) => prev.filter((p) => p._id !== id));
   };
 
-  /*
-  EXPORT GROUP
-  */
+  //EXPORT GROUP
   const handleGroupExport = async () => {
     if (selected.length === 0) {
       return toast.warning("No selected purchases");
@@ -77,10 +75,10 @@ const GroupPurchase = () => {
     <>
       <TopBar3 />
 
-      <div className="min-h-screen bg-gray-100 p-6 grid grid-cols-2 gap-6">
-        {/*
-           DIV 1: ALL PURCHASES
-        */}
+      <div className="min-h-screen bg-gray-100 p-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {
+          //ALL PURCHASES
+        }
         <div className="bg-white p-6 rounded-2xl shadow-md">
           <h1 className="text-xl font-semibold mb-4">All Purchases</h1>
 
@@ -117,9 +115,9 @@ const GroupPurchase = () => {
           </div>
         </div>
 
-        {/*
-           DIV 2: SELECTED
-        */}
+        {
+          //DIV 2: SELECTED
+        }
         <div className="bg-white p-6 rounded-2xl shadow-md">
           <h1 className="text-xl font-semibold mb-4">
             Selected ({selected.length})
