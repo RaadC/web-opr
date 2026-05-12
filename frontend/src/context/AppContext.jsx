@@ -1,5 +1,11 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { getCart, saveCart } from "../utils/cartStorage";
+
+import {
+  getCart,
+  saveCart,
+  getFormData,
+  saveFormData,
+} from "../utils/cartStorage";
 
 const AppContext = createContext();
 
@@ -15,17 +21,28 @@ export const AppProvider = ({ children }) => {
     purpose: "",
   });
 
-  /* LOAD CART ON START */
+  /* ================= LOAD ON START ================= */
   useEffect(() => {
     setCartItems(getCart());
+
+    const savedForm = getFormData();
+
+    if (savedForm) {
+      setFormData(savedForm);
+    }
   }, []);
 
-  /* SAVE CART */
+  /* ================= SAVE CART ================= */
   useEffect(() => {
     saveCart(cartItems);
   }, [cartItems]);
 
-  /* ADD ITEM */
+  /* ================= SAVE FORM ================= */
+  useEffect(() => {
+    saveFormData(formData);
+  }, [formData]);
+
+  /* ================= ADD ITEM ================= */
   const addToCart = (item, qty = 1) => {
     setCartItems((prev) => {
       const existing = prev.find((i) => i._id === item._id);
@@ -42,43 +59,46 @@ export const AppProvider = ({ children }) => {
     });
   };
 
-  /* DECREASE ITEM */
+  /* ================= DECREASE ITEM ================= */
   const decreaseItem = (id) => {
     setCartItems((prev) =>
       prev
         .map((i) =>
-          i._id === id ? { ...i, quantity: i.quantity - 1 } : i
+          i._id === id
+            ? { ...i, quantity: i.quantity - 1 }
+            : i
         )
         .filter((i) => i.quantity > 0)
     );
   };
 
-  /* CLEAR EVERYTHING (AFTER PRINT) */
+  /* ================= CLEAR EVERYTHING ================= */
   const clearAll = () => {
-    setCartItems([]);
-    setFormData({
+    const emptyForm = {
       name: "",
       designation: "",
       department: "",
       purpose: "",
-    });
+    };
+
+    setCartItems([]);
+    setFormData(emptyForm);
+
     saveCart([]);
+    saveFormData(emptyForm);
   };
 
   return (
     <AppContext.Provider
       value={{
-        /* CART */
         cartItems,
         setCartItems,
         addToCart,
         decreaseItem,
 
-        /* FORM */
         formData,
         setFormData,
 
-        /* GLOBAL ACTION */
         clearAll,
       }}
     >
