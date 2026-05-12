@@ -70,23 +70,21 @@ const Cart = ({ formData, setFormData, cartItems, setCartItems }) => {
 
       if (existing) {
         return prev.map((i) =>
-          i._id === item._id
-            ? { ...i, quantity: i.quantity + qty }
-            : i
+          i._id === item._id ? { ...i, quantity: i.quantity + qty } : i,
         );
       }
 
       return [
-  ...prev,
-  {
-    _id: item._id,
-    name: item.name,
-    price: item.price,
-    category: item.category,
-    unit: item.unit, 
-    quantity: qty,
-  },
-];
+        ...prev,
+        {
+          _id: item._id,
+          name: item.name,
+          price: item.price,
+          category: item.category,
+          unit: item.unit,
+          quantity: qty,
+        },
+      ];
     });
 
     toast.success(`${item.name} added (${qty})`);
@@ -156,9 +154,24 @@ const Cart = ({ formData, setFormData, cartItems, setCartItems }) => {
           {/* FORM */}
           <div className="mb-8">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-3xl">
-              <TextBox name="name" placeholder="Name" value={formData.name} onChange={handleChange} />
-              <TextBox name="designation" placeholder="Designation" value={formData.designation} onChange={handleChange} />
-              <TextBox name="purpose" placeholder="Purpose" value={formData.purpose} onChange={handleChange} />
+              <TextBox
+                name="name"
+                placeholder="Name"
+                value={formData.name}
+                onChange={handleChange}
+              />
+              <TextBox
+                name="designation"
+                placeholder="Designation"
+                value={formData.designation}
+                onChange={handleChange}
+              />
+              <TextBox
+                name="purpose"
+                placeholder="Purpose"
+                value={formData.purpose}
+                onChange={handleChange}
+              />
 
               <select
                 name="department"
@@ -168,11 +181,13 @@ const Cart = ({ formData, setFormData, cartItems, setCartItems }) => {
                 hover:border-[#E83838] focus:border-[#E83838] focus:outline-none transition"
               >
                 <option value="">Department</option>
-                {departments.map((dept) => (
-                  <option key={dept._id} value={dept.code}>
-                    {dept.code}
-                  </option>
-                ))}
+                {[...departments]
+                  .sort((a, b) => a.code.localeCompare(b.code))
+                  .map((dept) => (
+                    <option key={dept._id} value={dept.code}>
+                      {dept.code}
+                    </option>
+                  ))}
               </select>
             </div>
           </div>
@@ -189,11 +204,15 @@ const Cart = ({ formData, setFormData, cartItems, setCartItems }) => {
           </div>
 
           {loadingItems ? (
-            <div className="text-center text-gray-500 py-10">Loading items...</div>
+            <div className="text-center text-gray-500 py-10">
+              Loading items...
+            </div>
           ) : itemsError ? (
             <div className="text-center text-gray-500 py-10">{itemsError}</div>
           ) : filteredItems.length === 0 ? (
-            <div className="text-center text-gray-500 py-10">No items match your search.</div>
+            <div className="text-center text-gray-500 py-10">
+              No items match your search.
+            </div>
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
               {filteredItems.map((item) => (

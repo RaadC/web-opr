@@ -105,7 +105,7 @@ const GroupPurchase = () => {
                     <td>
                       <button
                         onClick={() => handleAdd(p)}
-                        className="text-blue-600"
+                        className="text-blue-600 p-2 rounded-full duration-200 hover:bg-blue-600 hover:text-white hover:shadow-lg active:scale-90"
                       >
                         <Plus size={16} />
                       </button>
