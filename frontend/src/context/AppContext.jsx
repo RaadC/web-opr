@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
 import {
   getCart,
@@ -57,6 +58,8 @@ export const AppProvider = ({ children }) => {
 
       return [...prev, { ...item, quantity: qty }];
     });
+
+    toast.success(`${item.name} added (${qty})`);
   };
 
   /* ================= DECREASE ITEM ================= */
@@ -86,6 +89,8 @@ export const AppProvider = ({ children }) => {
 
     saveCart([]);
     saveFormData(emptyForm);
+
+    toast.success("Cart cleared");
   };
 
   return (

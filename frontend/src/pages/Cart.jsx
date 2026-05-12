@@ -16,12 +16,7 @@ const Cart = () => {
   const navigate = useNavigate();
 
   /* ================= CONTEXT ================= */
-  const {
-    cartItems,
-    addToCart,
-    formData,
-    setFormData,
-  } = useApp();
+  const { cartItems, addToCart, formData, setFormData, clearAll } = useApp();
 
   /* ================= LOCAL UI STATE ================= */
   const [departments, setDepartments] = useState([]);
@@ -80,10 +75,12 @@ const Cart = () => {
   /* ================= PREVIEW VALIDATION ================= */
   const handlePreview = () => {
     if (!formData.name.trim()) return toast.error("Name is required");
-    if (!formData.designation.trim()) return toast.error("Designation is required");
+    if (!formData.designation.trim())
+      return toast.error("Designation is required");
     if (!formData.purpose.trim()) return toast.error("Purpose is required");
     if (!formData.department) return toast.error("Please select a department");
-    if (cartItems.length === 0) return toast.error("Please add at least one item");
+    if (cartItems.length === 0)
+      return toast.error("Please add at least one item");
 
     navigate("/preview");
   };
@@ -97,8 +94,7 @@ const Cart = () => {
       .includes(search.toLowerCase());
 
     const matchesCategory =
-      selectedCategory === "All" ||
-      item.category === selectedCategory;
+      selectedCategory === "All" || item.category === selectedCategory;
 
     return matchesSearch && matchesCategory;
   });
@@ -108,7 +104,6 @@ const Cart = () => {
       <TopBar />
 
       <div className="min-h-screen">
-
         {/* FLOAT BUTTON */}
         <button
           onClick={handlePreview}
@@ -119,7 +114,6 @@ const Cart = () => {
         </button>
 
         <div className="pl-10 pr-4 pt-6">
-
           {/* TITLE */}
           <div className="mb-8">
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-semibold">
@@ -133,7 +127,6 @@ const Cart = () => {
           {/* FORM */}
           <div className="mb-8">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-3xl">
-
               <TextBox
                 name="name"
                 placeholder="Name"
@@ -155,21 +148,31 @@ const Cart = () => {
                 onChange={handleChange}
               />
 
-              <select
-                name="department"
-                value={formData.department}
-                onChange={handleChange}
-                className="select w-40 rounded-full pl-3 border border-gray-500 
-                hover:border-[#E83838] focus:border-[#E83838] focus:outline-none transition"
-              >
-                <option value="">Department</option>
-                {departments.map((dept) => (
-                  <option key={dept._id} value={dept.code}>
-                    {dept.code}
-                  </option>
-                ))}
-              </select>
+              <div className="flex items-center gap-3">
+                <select
+                  name="department"
+                  value={formData.department}
+                  onChange={handleChange}
+                  className="select w-40 rounded-full pl-3 border border-gray-500 
+    hover:border-[#E83838] focus:border-[#E83838] focus:outline-none transition"
+                >
+                  <option value="">Department</option>
 
+                  {departments.map((dept) => (
+                    <option key={dept._id} value={dept.code}>
+                      {dept.code}
+                    </option>
+                  ))}
+                </select>
+
+                <button
+                  onClick={clearAll}
+                  type="button"
+                  className="btn btn-sm bg-[#9B1805] hover:bg-[#E83838] text-white border-none"
+                >
+                  Clear
+                </button>
+              </div>
             </div>
           </div>
 
@@ -190,9 +193,7 @@ const Cart = () => {
               Loading items...
             </div>
           ) : itemsError ? (
-            <div className="text-center text-gray-500 py-10">
-              {itemsError}
-            </div>
+            <div className="text-center text-gray-500 py-10">{itemsError}</div>
           ) : filteredItems.length === 0 ? (
             <div className="text-center text-gray-500 py-10">
               No items match your search.
@@ -209,7 +210,6 @@ const Cart = () => {
               ))}
             </div>
           )}
-
         </div>
       </div>
 
