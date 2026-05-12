@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { getCart, saveCart } from "../utils/cartStorage";
 import { Plus, Printer } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -21,6 +22,23 @@ const Cart = ({ formData, setFormData, cartItems, setCartItems }) => {
   const [loadingItems, setLoadingItems] = useState(false);
   const [itemsError, setItemsError] = useState(null);
 
+  //prevent overwrite bug
+  const [initialized, setInitialized] = useState(false);
+
+  /* LOAD CART ONCE */
+  useEffect(() => {
+    const storedCart = getCart();
+    setCartItems(storedCart);
+    setInitialized(true);
+  }, []);
+
+  /* SAVE CART ONLY AFTER INIT */
+  useEffect(() => {
+    if (!initialized) return;
+    saveCart(cartItems);
+  }, [cartItems, initialized]);
+
+  /* FETCH DEPARTMENTS */
   useEffect(() => {
     const fetchDepartments = async () => {
       try {
@@ -34,6 +52,7 @@ const Cart = ({ formData, setFormData, cartItems, setCartItems }) => {
     fetchDepartments();
   }, []);
 
+  /* FETCH ITEMS */
   useEffect(() => {
     const fetchItems = async () => {
       try {
@@ -62,6 +81,7 @@ const Cart = ({ formData, setFormData, cartItems, setCartItems }) => {
     }));
   };
 
+  /* ADD TO CART */
   const addToCart = (item, quantity) => {
     const qty = !quantity || quantity < 1 ? 1 : quantity;
 
@@ -70,7 +90,9 @@ const Cart = ({ formData, setFormData, cartItems, setCartItems }) => {
 
       if (existing) {
         return prev.map((i) =>
-          i._id === item._id ? { ...i, quantity: i.quantity + qty } : i,
+          i._id === item._id
+            ? { ...i, quantity: i.quantity + qty }
+            : i
         );
       }
 
@@ -90,27 +112,13 @@ const Cart = ({ formData, setFormData, cartItems, setCartItems }) => {
     toast.success(`${item.name} added (${qty})`);
   };
 
+  /* PREVIEW VALIDATION */
   const handlePreview = () => {
-    if (!formData.name.trim()) {
-      toast.error("Name is required");
-      return;
-    }
-    if (!formData.designation.trim()) {
-      toast.error("Designation is required");
-      return;
-    }
-    if (!formData.purpose.trim()) {
-      toast.error("Purpose is required");
-      return;
-    }
-    if (!formData.department) {
-      toast.error("Please select a department");
-      return;
-    }
-    if (cartItems.length === 0) {
-      toast.error("Please add at least one item");
-      return;
-    }
+    if (!formData.name.trim()) return toast.error("Name is required");
+    if (!formData.designation.trim()) return toast.error("Designation is required");
+    if (!formData.purpose.trim()) return toast.error("Purpose is required");
+    if (!formData.department) return toast.error("Please select a department");
+    if (cartItems.length === 0) return toast.error("Please add at least one item");
 
     toast.success("Proceeding to preview");
     navigate("/preview");
@@ -124,7 +132,8 @@ const Cart = ({ formData, setFormData, cartItems, setCartItems }) => {
       .includes(search.toLowerCase());
 
     const matchesCategory =
-      selectedCategory === "All" || item.category === selectedCategory;
+      selectedCategory === "All" ||
+      item.category === selectedCategory;
 
     return matchesSearch && matchesCategory;
   });
@@ -132,6 +141,7 @@ const Cart = ({ formData, setFormData, cartItems, setCartItems }) => {
   return (
     <>
       <TopBar />
+
       <div className="min-h-screen">
         <button
           onClick={handlePreview}
@@ -192,6 +202,7 @@ const Cart = ({ formData, setFormData, cartItems, setCartItems }) => {
             </div>
           </div>
 
+          {/* SEARCH */}
           <div className="mb-10">
             <SearchBar
               value={search}
@@ -203,12 +214,15 @@ const Cart = ({ formData, setFormData, cartItems, setCartItems }) => {
             />
           </div>
 
+          {/* ITEMS */}
           {loadingItems ? (
             <div className="text-center text-gray-500 py-10">
               Loading items...
             </div>
           ) : itemsError ? (
-            <div className="text-center text-gray-500 py-10">{itemsError}</div>
+            <div className="text-center text-gray-500 py-10">
+              {itemsError}
+            </div>
           ) : filteredItems.length === 0 ? (
             <div className="text-center text-gray-500 py-10">
               No items match your search.
@@ -227,6 +241,7 @@ const Cart = ({ formData, setFormData, cartItems, setCartItems }) => {
           )}
         </div>
       </div>
+
       <Footer />
     </>
   );

@@ -5,10 +5,27 @@ import { useEffect } from "react";
 
 import TopBar2 from "../components/TopBar2";
 import api from "../api/axios.js";
+import { getCart, saveCart, clearCart } from "../utils/cartStorage";
 
-const Preview = ({ formData, setFormData, cartItems, setCartItems }) => {
+const Preview = ({ formData, setFormData, setCartItems }) => {
   const navigate = useNavigate();
 
+  const [cartItems, setLocalCart] = useState([]);
+
+  /* LOAD CART FROM LOCALSTORAGE */
+  useEffect(() => {
+    const stored = getCart();
+    setLocalCart(stored);
+    setCartItems(stored);
+  }, []);
+
+  /* SYNC ON CHANGE */
+  useEffect(() => {
+    saveCart(cartItems);
+    setCartItems(cartItems);
+  }, [cartItems]);
+
+  /* REDIRECT IF EMPTY */
   useEffect(() => {
     if (cartItems.length === 0) {
       navigate("/", { replace: true });
@@ -17,31 +34,33 @@ const Preview = ({ formData, setFormData, cartItems, setCartItems }) => {
 
   const grandTotal = cartItems.reduce(
     (total, item) => total + item.price * item.quantity,
-    0,
+    0
   );
+
+  /* REMOVE / DECREASE ITEM */
   const handleMinus = (itemId) => {
-    setCartItems((prev) => {
-      const existing = prev.find((i) => i._id === itemId);
-      if (!existing) return prev;
+    setLocalCart((prev) => {
+      const updated = prev
+        .map((i) =>
+          i._id === itemId
+            ? { ...i, quantity: i.quantity - 1 }
+            : i
+        )
+        .filter((i) => i.quantity > 0);
 
-      if (existing.quantity === 1) {
-        return prev.filter((i) => i._id !== itemId);
-      }
-
-      return prev.map((i) =>
-        i._id === itemId ? { ...i, quantity: i.quantity - 1 } : i,
-      );
+      saveCart(updated);
+      return updated;
     });
   };
 
+  /* PRINT + SAVE + EXPORT */
   const handlePrint = async () => {
-    let savedId = null;
-
     try {
       const signatoryRes = await api.get("/signatory");
 
       const signatoryName =
         signatoryRes.data.length > 0 ? signatoryRes.data[0].name : null;
+
       const payload = {
         name: formData.name,
         designation: formData.designation,
@@ -52,17 +71,18 @@ const Preview = ({ formData, setFormData, cartItems, setCartItems }) => {
         signatory: signatoryName,
         createdAt: new Date(),
       };
+
       const response = await api.post("/purchase-request", payload);
-      savedId = response.data._id;
+      const savedId = response.data._id;
 
       toast.success("Purchase Request Saved Successfully!");
+
       const excelResponse = await api.get(
         `/purchase-request/export/${savedId}`,
-        { responseType: "blob" },
+        { responseType: "blob" }
       );
 
       const url = window.URL.createObjectURL(new Blob([excelResponse.data]));
-
       const link = document.createElement("a");
       link.href = url;
       link.setAttribute("download", `purchase_${savedId}.xlsx`);
@@ -73,6 +93,9 @@ const Preview = ({ formData, setFormData, cartItems, setCartItems }) => {
       console.error("Error saving or exporting:", error);
       toast.error("Something went wrong, but request may have been saved.");
     } finally {
+      setLocalCart([]);
+      saveCart([]);
+
       setCartItems([]);
 
       setFormData({
@@ -81,6 +104,7 @@ const Preview = ({ formData, setFormData, cartItems, setCartItems }) => {
         department: "",
         purpose: "",
       });
+
       navigate("/", { replace: true });
     }
   };
@@ -93,12 +117,16 @@ const Preview = ({ formData, setFormData, cartItems, setCartItems }) => {
         <div className="mb-8">
           <h1 className="text-4xl font-semibold">Purchase Request Preview</h1>
         </div>
+
         <div className="flex justify-center">
           <div className="bg-white w-full max-w-4xl rounded-2xl shadow-lg p-8">
+
+            {/* ACTION BUTTONS */}
             <div className="flex justify-end gap-3 mb-6">
               <Link to="/" className="btn btn-outline btn-md">
                 Back
               </Link>
+
               <button
                 onClick={handlePrint}
                 className="btn btn-primary btn-md px-3 bg-[#9B1805] hover:bg-[#E83838] text-white"
@@ -107,23 +135,17 @@ const Preview = ({ formData, setFormData, cartItems, setCartItems }) => {
               </button>
             </div>
 
+            {/* FORM DATA */}
             <div className="mb-8 border-b pb-6">
               <div className="space-y-3 text-gray-700">
-                <p>
-                  <strong>Name:</strong> {formData.name}
-                </p>
-                <p>
-                  <strong>Designation:</strong> {formData.designation}
-                </p>
-                <p>
-                  <strong>Department:</strong> {formData.department}
-                </p>
-                <p>
-                  <strong>Purpose:</strong> {formData.purpose}
-                </p>
+                <p><strong>Name:</strong> {formData.name}</p>
+                <p><strong>Designation:</strong> {formData.designation}</p>
+                <p><strong>Department:</strong> {formData.department}</p>
+                <p><strong>Purpose:</strong> {formData.purpose}</p>
               </div>
             </div>
 
+            {/* ITEMS */}
             <div className="mb-6">
               <h2 className="text-xl font-semibold mb-4">Items</h2>
 
@@ -167,10 +189,12 @@ const Preview = ({ formData, setFormData, cartItems, setCartItems }) => {
               )}
             </div>
 
+            {/* TOTAL */}
             <div className="border-t pt-6 flex justify-between text-lg font-bold">
               <span>Total</span>
               <span>₱{grandTotal.toFixed(2)}</span>
             </div>
+
           </div>
         </div>
       </div>
