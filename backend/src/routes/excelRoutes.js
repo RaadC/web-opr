@@ -8,13 +8,19 @@ const router = express.Router();
 /* TEMPLATE SELECTOR */
 const getTemplatePath = (count) => {
   if (count <= 25) {
-    return "templates/pr-template.xlsx";
-  } else if (count <= 60) {
-    return "templates/pr-template 2p.xlsx";
-  } else if (count <= 107) {
-    return "templates/pr-template 3p.xlsx";
+    return "templates/pr-template_25.xlsx";
+  } else if (count <= 45) {
+    return "templates/pr-template_45.xlsx";
+  } else if (count <= 65) {
+    return "templates/pr-template_65.xlsx";
+  } else if (count <= 85) {
+    return "templates/pr-template_85.xlsx";
+  } else if (count <= 105) {
+    return "templates/pr-template_105.xlsx";
+  } else if (count <= 125) {
+    return "templates/pr-template_125.xlsx";
   } else {
-    return "templates/pr-template 4p.xlsx";
+    return "templates/pr-template_145.xlsx";
   }
 };
 
@@ -28,34 +34,58 @@ const getHeaderMap = (count) => {
       purpose: "C35",
       signatory: "D39",
     };
-  } else if (count <= 60) {
+  } else if (count <= 45) {
     return {
-      name: "C74",
-      designation: "C75",
+      name: "C59",
+      designation: "C60",
       department: "A6",
-      purpose: "C70",
-      signatory: "D74",
+      purpose: "C55",
+      signatory: "D59",
     };
-  } else if (count <= 107) {
+  } else if (count <= 65) {
     return {
-      name: "C121",
-      designation: "C122",
+      name: "C79",
+      designation: "C80",
       department: "A6",
-      purpose: "C117",
-      signatory: "D121",
+      purpose: "C75",
+      signatory: "D79",
+    };
+  } else if (count <= 85) {
+    return {
+      name: "C99",
+      designation: "C100",
+      department: "A6",
+      purpose: "C95",
+      signatory: "D99",
+    };
+  } else if (count <= 105) {
+    return {
+      name: "C119",
+      designation: "C120",
+      department: "A6",
+      purpose: "C115",
+      signatory: "D119",
+    };
+  } else if (count <= 125) {
+    return {
+      name: "C139",
+      designation: "C140",
+      department: "A6",
+      purpose: "C135",
+      signatory: "139",
     };
   } else {
     return {
-      name: "C168",
-      designation: "C169",
+      name: "C159",
+      designation: "C160",
       department: "A6",
-      purpose: "C164",
-      signatory: "D168",
+      purpose: "C155",
+      signatory: "D159",
     };
   }
 };
 
-// COLUMN MAP 
+// COLUMN MAP
 const getColumnMap = () => {
   return {
     unit: 2,
@@ -113,17 +143,16 @@ router.get("/export/:id", async (req, res) => {
 
     res.setHeader(
       "Content-Type",
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     );
 
     res.setHeader(
       "Content-Disposition",
-      `attachment; filename=purchase_${purchase._id}.xlsx`
+      `attachment; filename=purchase_${purchase._id}.xlsx`,
     );
 
     await workbook.xlsx.write(res);
     res.end();
-
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error generating Excel" });
@@ -219,7 +248,7 @@ router.post("/group-export", async (req, res) => {
     });
 
     //RIGHT SIDE
-    const pivotStartCol = 12; 
+    const pivotStartCol = 12;
     const pivotStartRow = 3;
 
     const headerRow = worksheet.getRow(pivotStartRow);
@@ -251,17 +280,16 @@ router.post("/group-export", async (req, res) => {
 
     res.setHeader(
       "Content-Type",
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     );
 
     res.setHeader(
       "Content-Disposition",
-      `attachment; filename=grouped_purchase.xlsx`
+      `attachment; filename=grouped_purchase.xlsx`,
     );
 
     await workbook.xlsx.write(res);
     res.end();
-
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Grouped export error" });

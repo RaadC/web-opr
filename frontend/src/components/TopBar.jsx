@@ -17,10 +17,12 @@ const TopBar = () => {
 
         {/* RIGHT SIDE */}
         <div className="flex items-center gap-3">
+          <Link to="/about" className="btn btn-outline btn-md">
+            About
+          </Link>
           <Link to="/admin" className="btn btn-outline btn-md">
             Admin
           </Link>
-
           <Link
             to="/suggest"
             className="btn btn-primary btn-md bg-[#9B1805] hover:bg-[#E83838] text-white"

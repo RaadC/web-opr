@@ -12,6 +12,7 @@ import ViewPurchase from "./pages/ViewPurchase";
 import ViewSuggest from "./pages/ViewSuggest";
 import Items from "./pages/Items";
 import GroupPurchase from "./pages/GroupPurchase";
+import About from "./pages/About"
 
 const App = () => {
   const [formData, setFormData] = useState({
@@ -30,6 +31,8 @@ const App = () => {
         <Route path="/preview" element={<Preview />} />
         <Route path="/suggest" element={<Suggest />} />
         <Route path="/admin" element={<AdminLogin />} />
+        <Route path="/about" element={<About />} />
+
         <Route
           path="/manage-department"
           element={
