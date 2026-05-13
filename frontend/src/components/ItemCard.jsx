@@ -17,6 +17,7 @@ const ItemCard = ({ item, onAction, Icon }) => {
       <img
         src={item.imageUrl}
         alt={item.name}
+        loading="lazy"
         className="w-full h-32 object-contain mb-4"
       />
 

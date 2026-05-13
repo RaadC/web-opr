@@ -50,12 +50,12 @@ const About = () => {
             </div>
           </div>
         </div>
-        <div className="space-y-6">
+        <div className="space-y-6 mb-6">
           <p className="text-gray-700 leading-relaxed">
             If long text causes multi-line content in the generated Excel form,
             enable <strong>Auto Fit Row Height </strong>
             to properly display all information. <br />
-            <strong>Select Rows - Format - AutoFit Row Height</strong>
+            <strong>- Select Rows - Format - AutoFit Row Height</strong>
           </p>
         </div>
       </div>
