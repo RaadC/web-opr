@@ -10,6 +10,7 @@ import { useApp } from "../context/AppContext";
 
 const Preview = () => {
   const navigate = useNavigate();
+  const [idempotencyKey] = useState(() => crypto.randomUUID());
 
   const {
     cartItems,
@@ -48,7 +49,6 @@ const Preview = () => {
         signatory: signatoryName,
         createdAt: new Date(),
       };
-      const idempotencyKey = crypto.randomUUID();
       const response = await api.post("/purchase-request", payload, {
         headers: {
           "Idempotency-Key": idempotencyKey,

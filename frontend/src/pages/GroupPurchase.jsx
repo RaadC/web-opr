@@ -8,6 +8,7 @@ import api from "../api/axios";
 const GroupPurchase = () => {
   const [purchases, setPurchases] = useState([]);
   const [selected, setSelected] = useState([]);
+  const [idempotencyKey] = useState(() => crypto.randomUUID());
 
   useEffect(() => {
     fetchPurchases();
@@ -44,7 +45,6 @@ const GroupPurchase = () => {
     }
 
     try {
-      const idempotencyKey = crypto.randomUUID();
       const ids = selected.map((p) => p._id);
 
       const res = await api.post(
