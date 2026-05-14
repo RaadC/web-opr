@@ -2,6 +2,7 @@ import express from "express";
 import ExcelJS from "exceljs";
 import Purchase from "../models/purchase.js";
 import path from "path";
+import { strictLimiter, getLimiter } from "../middleware/rateLimit.js";
 
 const router = express.Router();
 
@@ -104,7 +105,7 @@ const fillRow = (row, item, col) => {
 };
 
 //SINGLE EXPORT
-router.get("/export/:id", async (req, res) => {
+router.get("/export/:id", getLimiter, async (req, res) => {
   try {
     const purchase = await Purchase.findById(req.params.id);
 
@@ -160,7 +161,7 @@ router.get("/export/:id", async (req, res) => {
 });
 
 //GROUP EXPORT
-router.post("/group-export", async (req, res) => {
+router.post("/group-export", strictLimiter, async (req, res) => {
   try {
     const { ids } = req.body;
 
@@ -249,7 +250,7 @@ router.post("/group-export", async (req, res) => {
 
     //RIGHT SIDE
     const pivotStartCol = 12;
-    const pivotStartRow = 3;
+    const pivotStartRow = 10;
 
     const headerRow = worksheet.getRow(pivotStartRow);
 

@@ -1,5 +1,6 @@
 import express from "express";
 import Item from "../models/items.js";
+import { strictLimiter } from "../middleware/rateLimit.js";
 
 const router = express.Router();
 
@@ -12,7 +13,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.post("/", async (req, res) => {
+router.post("/", strictLimiter, async (req, res) => {
   try {
     const { imageUrl, name, price, unit, category } = req.body;
 

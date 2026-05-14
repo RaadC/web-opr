@@ -1,9 +1,10 @@
 import express from "express";
 import Suggest from "../models/suggest.js";
+import { strictLimiter } from "../middleware/rateLimit.js";
 
 const router = express.Router();
 
-router.post("/", async (req, res) => {
+router.post("/", strictLimiter, async (req, res) => {
   try {
     const { name, suggestion } = req.body;
 

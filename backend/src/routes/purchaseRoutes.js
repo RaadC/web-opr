@@ -1,24 +1,34 @@
 import express from "express";
 import Purchase from "../models/purchase.js";
+import { strictLimiter } from "../middleware/rateLimit.js";
 
 const router = express.Router();
 
-router.post("/", async (req, res) => {
+router.post("/", strictLimiter, async (req, res) => {
   try {
     const purchase = new Purchase(req.body);
+
     const saved = await purchase.save();
+
     res.status(201).json(saved);
   } catch (error) {
-    res.status(500).json({ message: "Error saving purchase" });
+    res.status(500).json({
+      message: "Error saving purchase",
+    });
   }
 });
 
 router.get("/", async (req, res) => {
   try {
-    const purchases = await Purchase.find().sort({ createdAt: -1 });
+    const purchases = await Purchase.find().sort({
+      createdAt: -1,
+    });
+
     res.status(200).json(purchases);
   } catch (error) {
-    res.status(500).json({ message: "Error fetching purchases" });
+    res.status(500).json({
+      message: "Error fetching purchases",
+    });
   }
 });
 /*
