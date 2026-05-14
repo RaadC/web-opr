@@ -67,7 +67,7 @@ const Suggest = () => {
 
               <textarea
                 name="suggestion"
-                placeholder="Suggestion"
+                placeholder="Suggestion - Details/Price"
                 rows={4}
                 value={formData.suggestion}
                 onChange={handleChange}

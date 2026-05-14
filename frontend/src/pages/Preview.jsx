@@ -48,8 +48,12 @@ const Preview = () => {
         signatory: signatoryName,
         createdAt: new Date(),
       };
-
-      const response = await api.post("/purchase-request", payload);
+      const idempotencyKey = crypto.randomUUID();
+      const response = await api.post("/purchase-request", payload, {
+        headers: {
+          "Idempotency-Key": idempotencyKey,
+        },
+      });
       const savedId = response.data._id;
 
       toast.success("Purchase Request Saved Successfully!");

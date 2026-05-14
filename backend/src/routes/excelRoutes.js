@@ -3,6 +3,7 @@ import ExcelJS from "exceljs";
 import Purchase from "../models/purchase.js";
 import path from "path";
 import { strictLimiter, getLimiter } from "../middleware/rateLimit.js";
+import idempotencyMiddleware from "../middleware/idempotency.js";
 
 const router = express.Router();
 
@@ -161,7 +162,7 @@ router.get("/export/:id", getLimiter, async (req, res) => {
 });
 
 //GROUP EXPORT
-router.post("/group-export", strictLimiter, async (req, res) => {
+router.post("/group-export", strictLimiter, idempotencyMiddleware, async (req, res) => {
   try {
     const { ids } = req.body;
 

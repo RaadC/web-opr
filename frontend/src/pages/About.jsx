@@ -52,6 +52,10 @@ const About = () => {
         </div>
         <div className="space-y-6 mb-6">
           <p className="text-gray-700 leading-relaxed">
+            If an item is not available in the app, you may suggest it (Go to Suggest window) for the admin to add later, 
+            or print the Purchase Request and add the item manually afterward.
+          </p>
+          <p className="text-gray-700 leading-relaxed">
             If long text causes multi-line content in the generated Excel form,
             enable <strong>Auto Fit Row Height </strong>
             to properly display all information. <br />

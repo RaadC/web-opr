@@ -23,7 +23,7 @@ const GroupPurchase = () => {
     }
   };
 
-  // ADD TO GROUP 
+  // ADD TO GROUP
   const handleAdd = (purchase) => {
     if (selected.find((p) => p._id === purchase._id)) {
       return toast.warning("Already added");
@@ -44,12 +44,18 @@ const GroupPurchase = () => {
     }
 
     try {
+      const idempotencyKey = crypto.randomUUID();
       const ids = selected.map((p) => p._id);
 
       const res = await api.post(
         "/purchase-request/group-export",
         { ids },
-        { responseType: "blob" },
+        {
+          responseType: "blob",
+          headers: {
+            "Idempotency-Key": idempotencyKey,
+          },
+        },
       );
 
       const url = window.URL.createObjectURL(new Blob([res.data]));

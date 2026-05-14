@@ -1,10 +1,11 @@
 import express from "express";
 import Purchase from "../models/purchase.js";
 import { strictLimiter } from "../middleware/rateLimit.js";
+import idempotencyMiddleware from "../middleware/idempotency.js";
 
 const router = express.Router();
 
-router.post("/", strictLimiter, async (req, res) => {
+router.post("/", strictLimiter, idempotencyMiddleware, async (req, res) => {
   try {
     const purchase = new Purchase(req.body);
 
