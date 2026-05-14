@@ -32,7 +32,7 @@ router.get("/", async (req, res) => {
     });
   }
 });
-/*
+//*
 router.delete("/:id", async (req, res) => {
   try {
     const deleted = await Purchase.findByIdAndDelete(req.params.id);
@@ -55,5 +55,5 @@ router.delete("/", async (req, res) => {
     res.status(500).json({ message: "Error deleting all purchases" });
   }
 });
-*/
+//*/
 export default router;
