@@ -28,7 +28,7 @@ const TopBar3 = () => {
 
           <Link to="/" className="hidden md:block">
             <img
-              src="https://www.tupcavite.edu.ph/images/tup-logo.png"
+              src="tupLogo.png"
               alt="Logo"
               className="h-14 w-auto object-contain"
             />
@@ -41,8 +41,8 @@ const TopBar3 = () => {
 
         <div>
           <img
-            src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/Bagong_Pilipinas_logo.png/3840px-Bagong_Pilipinas_logo.png"
-            alt="Right Logo"
+            src="/bpLogo.png"
+            alt="Logo"
             className="h-14 w-auto object-contain"
           />
         </div>
@@ -50,7 +50,7 @@ const TopBar3 = () => {
         <div className="absolute left-1/2 -translate-x-1/2 md:hidden">
           <Link to="/">
             <img
-              src="https://www.tupcavite.edu.ph/images/tup-logo.png"
+              src="/tupLogo.png"
               alt="Logo"
               className="h-14 w-auto object-contain"
             />
