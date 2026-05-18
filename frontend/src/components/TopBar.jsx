@@ -8,7 +8,7 @@ const TopBar = () => {
         <div className="flex-1">
           <Link to="/" className="flex items-center">
             <img
-              src="https://www.tupcavite.edu.ph/images/tup-logo.png"
+              src="/tupLogo.png"
               alt="Logo"
               className="h-14 w-auto object-contain"
             />
@@ -31,7 +31,7 @@ const TopBar = () => {
           </Link>
 
           <img
-            src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/Bagong_Pilipinas_logo.png/3840px-Bagong_Pilipinas_logo.png"
+            src="/bpLogo.png"
             alt="User"
             className="h-14 w-auto rounded-full object-cover cursor-pointer"
           />

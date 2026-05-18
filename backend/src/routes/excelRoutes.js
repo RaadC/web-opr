@@ -250,7 +250,7 @@ router.post("/group-export", strictLimiter, async (req, res) => {
 
     //RIGHT SIDE
     const pivotStartCol = 12;
-    const pivotStartRow = 10;
+    const pivotStartRow = 8;
 
     const headerRow = worksheet.getRow(pivotStartRow);
 
