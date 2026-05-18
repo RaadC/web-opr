@@ -73,7 +73,7 @@ const GroupPurchase = () => {
       setSelected([]);
     } catch (error) {
       console.error(error);
-      toast.error("Failed to export grouped file");
+      toast.error("Failed to export grouped file, please refresh browser to retry");
     }
   };
 

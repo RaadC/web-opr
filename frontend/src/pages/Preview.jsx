@@ -76,7 +76,7 @@ const Preview = () => {
       navigate("/", { replace: true });
     } catch (error) {
       console.error("Error saving or exporting:", error);
-      toast.error("Something went wrong, but request may have been saved.");
+      toast.error("Something went wrong, please refresh browser to retry");
     }
   };
 
