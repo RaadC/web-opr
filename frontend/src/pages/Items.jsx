@@ -41,7 +41,13 @@ const Items = () => {
     try {
       await api.post("/items", newItem);
       setModalOpen(false);
-      setNewItem({ name: "", price: "", unit: "", category: "", imageUrl: "" });
+      setNewItem({
+        name: "",
+        price: "",
+        unit: unit.toLowerCase(),
+        category: category.toLowerCase(),
+        imageUrl: "",
+      });
       fetchItems();
       toast.success("Item added");
     } catch (err) {
