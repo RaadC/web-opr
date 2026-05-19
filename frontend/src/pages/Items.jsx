@@ -32,28 +32,39 @@ const Items = () => {
   }, []);
 
   const addItem = async () => {
-    const { name, price, unit, category } = newItem;
-    if (!name || !price || !unit || !category) {
-      toast.error("Enter complete details");
-      return;
-    }
+  const { name, price, unit, category } = newItem;
 
-    try {
-      await api.post("/items", newItem);
-      setModalOpen(false);
-      setNewItem({
-        name: "",
-        price: "",
-        unit: unit.toLowerCase(),
-        category: category.toLowerCase(),
-        imageUrl: "",
-      });
-      fetchItems();
-      toast.success("Item added");
-    } catch (err) {
-      console.error("Error adding item:", err);
-    }
+  if (!name || !price || !unit || !category) {
+    toast.error("Enter complete details");
+    return;
+  }
+
+  const itemToSave = {
+    ...newItem,
+    unit: unit.toLowerCase(),
+    category: category.toLowerCase(),
   };
+
+  try {
+    await api.post("/items", itemToSave);
+
+    setModalOpen(false);
+
+    setNewItem({
+      name: "",
+      price: "",
+      unit: "",
+      category: "",
+      imageUrl: "",
+    });
+
+    fetchItems();
+    toast.success("Item added");
+  } catch (err) {
+    console.error("Error adding item:", err);
+    toast.error("Failed to add item");
+  }
+};
 
   const deleteItem = async (id) => {
     try {
