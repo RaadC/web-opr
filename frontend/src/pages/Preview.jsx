@@ -8,6 +8,7 @@ import api from "../api/axios.js";
 
 import { useApp } from "../context/AppContext";
 
+
 const Preview = () => {
   const navigate = useNavigate();
   const [idempotencyKey] = useState(() => crypto.randomUUID());
@@ -40,13 +41,13 @@ const Preview = () => {
         signatoryRes.data.length > 0 ? signatoryRes.data[0].name : null;
 
       const payload = {
-        name: formData.name,
-        designation: formData.designation,
+        name: formData.name.toUpperCase(),
+        designation: formData.designation.toUpperCase(),
         department: formData.department,
         purpose: formData.purpose,
         items: cartItems,
         totalAmount: grandTotal,
-        signatory: signatoryName,
+        signatory: signatoryName.toUpperCase(),
         createdAt: new Date(),
       };
       const response = await api.post("/purchase-request", payload, {
