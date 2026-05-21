@@ -246,7 +246,7 @@ const Items = () => {
                   Cancel
                 </button>
                 <button
-                  onClick={addItem}
+                  type="submit"
                   className="btn bg-[#9B1805] hover:bg-[#E83838] text-white px-2"
                 >
                   Add
