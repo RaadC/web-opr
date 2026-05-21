@@ -31,40 +31,43 @@ const Items = () => {
     fetchItems();
   }, []);
 
-  const addItem = async () => {
-    const { name, price, unit, category } = newItem;
+  const addItem = async (e) => {
+  e.preventDefault();
 
-    if (!name || !price || !unit || !category) {
-      toast.error("Enter complete details");
-      return;
-    }
+  const { name, price, unit, category } = newItem;
 
-    const itemToSave = {
-      ...newItem,
-      unit: unit.toLowerCase(),
-      category: category.toLowerCase(),
-    };
+  if (!name || !price || !unit || !category) {
+    toast.error("Enter complete details");
+    return;
+  }
 
-    try {
-      await api.post("/items", itemToSave);
-
-      setModalOpen(false);
-
-      setNewItem({
-        name: "",
-        price: "",
-        unit: "",
-        category: "",
-        imageUrl: "",
-      });
-
-      fetchItems();
-      toast.success("Item added");
-    } catch (err) {
-      console.error("Error adding item:", err);
-      toast.error("Failed to add item");
-    }
+  const itemToSave = {
+    ...newItem,
+    unit: unit.toLowerCase(),
+    category: category.toLowerCase(),
   };
+
+  try {
+    await api.post("/items", itemToSave);
+
+    setModalOpen(false);
+
+    setNewItem({
+      name: "",
+      price: "",
+      unit: "",
+      category: "",
+      imageUrl: "",
+    });
+
+    await fetchItems();
+
+    toast.success("Item added");
+  } catch (err) {
+    console.error("Error adding item:", err);
+    toast.error("Failed to add item");
+  }
+};
 
   const deleteItem = async (id) => {
     try {
@@ -246,7 +249,8 @@ const Items = () => {
                   Cancel
                 </button>
                 <button
-                  type="submit"
+                  type="button"
+                  onClick={() => setModalOpen(false)}
                   className="btn bg-[#9B1805] hover:bg-[#E83838] text-white px-2"
                 >
                   Add
