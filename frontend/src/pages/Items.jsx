@@ -32,39 +32,39 @@ const Items = () => {
   }, []);
 
   const addItem = async () => {
-  const { name, price, unit, category } = newItem;
+    const { name, price, unit, category } = newItem;
 
-  if (!name || !price || !unit || !category) {
-    toast.error("Enter complete details");
-    return;
-  }
+    if (!name || !price || !unit || !category) {
+      toast.error("Enter complete details");
+      return;
+    }
 
-  const itemToSave = {
-    ...newItem,
-    unit: unit.toLowerCase(),
-    category: category.toLowerCase(),
+    const itemToSave = {
+      ...newItem,
+      unit: unit.toLowerCase(),
+      category: category.toLowerCase(),
+    };
+
+    try {
+      await api.post("/items", itemToSave);
+
+      setModalOpen(false);
+
+      setNewItem({
+        name: "",
+        price: "",
+        unit: "",
+        category: "",
+        imageUrl: "",
+      });
+
+      fetchItems();
+      toast.success("Item added");
+    } catch (err) {
+      console.error("Error adding item:", err);
+      toast.error("Failed to add item");
+    }
   };
-
-  try {
-    await api.post("/items", itemToSave);
-
-    setModalOpen(false);
-
-    setNewItem({
-      name: "",
-      price: "",
-      unit: "",
-      category: "",
-      imageUrl: "",
-    });
-
-    fetchItems();
-    toast.success("Item added");
-  } catch (err) {
-    console.error("Error adding item:", err);
-    toast.error("Failed to add item");
-  }
-};
 
   const deleteItem = async (id) => {
     try {
@@ -179,78 +179,80 @@ const Items = () => {
       {modalOpen && (
         <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded-2xl w-full max-w-md">
-            <h2 className="text-xl font-semibold mb-4">Add Item</h2>
-            <div className="space-y-3">
-              <div>
+            <form onSubmit={addItem}>
+              <h2 className="text-xl font-semibold mb-4">Add Item</h2>
+              <div className="space-y-3">
+                <div>
+                  <input
+                    type="text"
+                    placeholder="Name"
+                    value={newItem.name}
+                    onChange={(e) =>
+                      setNewItem({ ...newItem, name: e.target.value })
+                    }
+                    maxLength={100}
+                    className="input w-full input-bordered pl-1 border border-gray-500"
+                  />
+
+                  {newItem.name.length === 100 && (
+                    <p className="text-red-500 text-sm mt-1">
+                      Maximum 100 characters reached
+                    </p>
+                  )}
+                </div>
+                <input
+                  type="number"
+                  placeholder="Price"
+                  value={newItem.price}
+                  onChange={(e) =>
+                    setNewItem({ ...newItem, price: e.target.value })
+                  }
+                  className="input w-full input-bordered  pl-1 border border-gray-500"
+                />
                 <input
                   type="text"
-                  placeholder="Name"
-                  value={newItem.name}
+                  placeholder="Unit (e.g., pcs)"
+                  value={newItem.unit}
                   onChange={(e) =>
-                    setNewItem({ ...newItem, name: e.target.value })
+                    setNewItem({ ...newItem, unit: e.target.value })
                   }
-                  maxLength={100}
-                  className="input w-full input-bordered pl-1 border border-gray-500"
+                  className="input w-full input-bordered  pl-1 border border-gray-500"
                 />
-
-                {newItem.name.length === 100 && (
-                  <p className="text-red-500 text-sm mt-1">
-                    Maximum 100 characters reached
-                  </p>
-                )}
+                <input
+                  type="text"
+                  placeholder="Category"
+                  value={newItem.category}
+                  onChange={(e) =>
+                    setNewItem({ ...newItem, category: e.target.value })
+                  }
+                  className="input w-full input-bordered  pl-1 border border-gray-500"
+                />
+                <input
+                  type="text"
+                  placeholder="Image URL"
+                  value={newItem.imageUrl}
+                  onChange={(e) =>
+                    setNewItem({ ...newItem, imageUrl: e.target.value })
+                  }
+                  className="input w-full input-bordered  pl-1 border border-gray-500"
+                />
               </div>
-              <input
-                type="number"
-                placeholder="Price"
-                value={newItem.price}
-                onChange={(e) =>
-                  setNewItem({ ...newItem, price: e.target.value })
-                }
-                className="input w-full input-bordered  pl-1 border border-gray-500"
-              />
-              <input
-                type="text"
-                placeholder="Unit (e.g., pcs)"
-                value={newItem.unit}
-                onChange={(e) =>
-                  setNewItem({ ...newItem, unit: e.target.value })
-                }
-                className="input w-full input-bordered  pl-1 border border-gray-500"
-              />
-              <input
-                type="text"
-                placeholder="Category"
-                value={newItem.category}
-                onChange={(e) =>
-                  setNewItem({ ...newItem, category: e.target.value })
-                }
-                className="input w-full input-bordered  pl-1 border border-gray-500"
-              />
-              <input
-                type="text"
-                placeholder="Image URL"
-                value={newItem.imageUrl}
-                onChange={(e) =>
-                  setNewItem({ ...newItem, imageUrl: e.target.value })
-                }
-                className="input w-full input-bordered  pl-1 border border-gray-500"
-              />
-            </div>
 
-            <div className="mt-4 flex justify-end gap-2">
-              <button
-                onClick={() => setModalOpen(false)}
-                className="btn hover:bg-gray-300 px-2"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={addItem}
-                className="btn bg-[#9B1805] hover:bg-[#E83838] text-white px-2"
-              >
-                Add
-              </button>
-            </div>
+              <div className="mt-4 flex justify-end gap-2">
+                <button
+                  onClick={() => setModalOpen(false)}
+                  className="btn hover:bg-gray-300 px-2"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={addItem}
+                  className="btn bg-[#9B1805] hover:bg-[#E83838] text-white px-2"
+                >
+                  Add
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
