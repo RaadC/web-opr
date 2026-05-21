@@ -243,14 +243,14 @@ const Items = () => {
 
               <div className="mt-4 flex justify-end gap-2">
                 <button
+                  type="button"
                   onClick={() => setModalOpen(false)}
                   className="btn hover:bg-gray-300 px-2"
                 >
                   Cancel
                 </button>
                 <button
-                  type="button"
-                  onClick={() => setModalOpen(false)}
+                  type="submit"
                   className="btn bg-[#9B1805] hover:bg-[#E83838] text-white px-2"
                 >
                   Add
