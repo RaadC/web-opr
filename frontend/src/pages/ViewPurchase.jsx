@@ -135,7 +135,7 @@ const ViewPurchase = () => {
                 ) : (
                   <tr>
                     <td colSpan="5" className="text-center text-gray-400">
-                      No purchase records found.
+                      No purchase records found. Try reloading the page.
                     </td>
                   </tr>
                 )}

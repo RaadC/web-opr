@@ -181,7 +181,7 @@ const Cart = () => {
 
           {loadingItems ? (
             <div className="text-center text-gray-500 py-10">
-              Loading items...
+              Loading items... Try reloading  if taking too long.
             </div>
           ) : itemsError ? (
             <div className="text-center text-gray-500 py-10">{itemsError}</div>

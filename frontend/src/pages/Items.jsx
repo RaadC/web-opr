@@ -169,7 +169,7 @@ const Items = () => {
                 ) : (
                   <tr>
                     <td colSpan={5} className="text-center text-gray-400 py-4">
-                      No items found.
+                      No items found. Try reloading the page.
                     </td>
                   </tr>
                 )}

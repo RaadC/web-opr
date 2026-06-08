@@ -65,7 +65,7 @@ const ViewSuggest = () => {
                 </div>
               ))
             ) : (
-              <p className="text-gray-400">No suggestions found.</p>
+              <p className="text-gray-400">No suggestions found. Try reloading the page.</p>
             )}
           </div>
         </div>

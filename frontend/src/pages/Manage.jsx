@@ -164,7 +164,7 @@ const Manage = () => {
                   {departments.length === 0 && (
                     <tr>
                       <td colSpan="3" className="text-center text-gray-400">
-                        No departments found.
+                        No departments found. Try reloading the page.
                       </td>
                     </tr>
                   )}
